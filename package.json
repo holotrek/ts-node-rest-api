@@ -4,7 +4,7 @@
   "description": "This is a simple app created to try out a Node.js REST API that interacts with MongoDB by following this tutorial:",
   "main": "./dist/server.js",
   "scripts": {
-    "start": "nodemon ./dist/server.js",
+    "start": "tsc & nodemon ./dist/server.js",
     "test": "npm test",
     "build": "tsc"
   },

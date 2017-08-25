@@ -5,7 +5,30 @@ https://www.codementor.io/olatundegaruba/nodejs-restful-apis-in-10-minutes-q0sgs
 
 However, it is written in TypeScript to provide better intellisense and easier extensibility to a full-fledged app.
 
-# Commands used to create the files in this project
+# Install
+
+`npm install`
+
+# Build & Run
+
+`npm start`
+
+# Test (TBD)
+
+`npm test`
+
+# Prerequisites
+
+* MongoDB server
+
+# Notes for later...
+
+## TODO
+
+* Get mongoose to correctly register the model
+* Setup Karma and some tests
+
+## Commands used to create the files in this project
 
 `npm init`
 
