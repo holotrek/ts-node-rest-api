@@ -11,6 +11,8 @@ However, it is written in TypeScript to provide better intellisense and easier e
 
 # Build & Run
 
+* Make sure MongoDB is running ( `mongod` ) and then run:
+
 `npm start`
 
 # Test (TBD)
