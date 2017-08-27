@@ -1,10 +1,14 @@
 import * as mongoose from 'mongoose';
 
-export const Task = mongoose.model('Tasks');
-
 export class TodoListController {
-    public listAllTasks(res: any): void {
-        Task.find({}, (err, task) => {
+	private static Task: mongoose.Model<any>;
+
+	constructor() {
+		TodoListController.Task = mongoose.model('Tasks')
+	}
+
+	public listAllTasks(res: any): void {
+        TodoListController.Task.find({}, (err: any, task: any) => {
             if (err) {
                 res.send(err);
             }
@@ -15,8 +19,8 @@ export class TodoListController {
     }
 
     public createTask(req: any, res: any): void {
-        const newTask = new Task(req.body);
-        newTask.save((err, task) => {
+        const newTask = new TodoListController.Task(req.body);
+        newTask.save((err: any, task: any) => {
             if (err) {
                 res.send(err);
             }
@@ -25,9 +29,9 @@ export class TodoListController {
             }
         });
     }
-    
+
     public getTask(req: any, res: any): void {
-        Task.findById(req.params.taskId, (err, task) => {
+        TodoListController.Task.findById(req.params.taskId, (err: any, task: any) => {
             if (err) {
                 res.send(err);
             }
@@ -36,11 +40,11 @@ export class TodoListController {
             }
         });
     }
-    
+
     public updateTask(req: any, res: any): void {
-        Task.findOneAndUpdate({
+        TodoListController.Task.findOneAndUpdate({
             _id: req.params.taskId
-        }, req.body, {new: true}, (err, task) => {
+        }, req.body, {new: true}, (err: any, task: any) => {
             if (err) {
                 res.send(err);
             }
@@ -49,9 +53,9 @@ export class TodoListController {
             }
         });
     }
-    
+
     public deleteTask(req: any, res: any): void {
-        Task.remove({
+        TodoListController.Task.remove({
             _id: req.params.taskId
         }, err => {
             if (err) {
