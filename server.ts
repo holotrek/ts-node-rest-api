@@ -2,14 +2,14 @@ import * as bodyParser from 'body-parser';
 import * as express from 'express';
 import * as mongoose from 'mongoose';
 
-import { TodoListModel } from './api/models/todo-list-model';
-import { TodoListRoutes } from './api/routes/todo-list-routes';
+import { TodoListModels } from './src/api/models/todo-list-models';
+import { TodoListRoutes } from './src/api/routes/todo-list-routes';
 
 const app = express();
 const port = process.env.PORT || 3000;
 
 // Create the models
-mongoose.model('Tasks', TodoListModel.initTaskSchema());
+mongoose.model('Tasks', TodoListModels.initTaskSchema());
 
 // Setup mongoose
 (mongoose as any).Promise = global.Promise;

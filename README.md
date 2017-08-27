@@ -24,32 +24,10 @@ However, it is written in TypeScript to provide better intellisense and easier e
 
 `npm start`
 
-# Test (TBD)
+# Test
 
 `npm test`
 
 # Prerequisites
 
 * MongoDB server
-
-# Notes for later...
-
-## TODO
-
-* Setup Karma and some tests
-
-## Commands used to create the files in this project
-
-`npm init`
-
-`npm i -g editorconfig-cli`
-
-`ec init`
-
-`npm i -g typescript`
-
-`tsc --init`
-
-`npm i -g tslint`
-
-`tslint --init`
