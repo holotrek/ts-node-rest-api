@@ -36,7 +36,6 @@ However, it is written in TypeScript to provide better intellisense and easier e
 
 ## TODO
 
-* Get mongoose to correctly register the model
 * Setup Karma and some tests
 
 ## Commands used to create the files in this project
