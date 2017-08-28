@@ -31,3 +31,15 @@ However, it is written in TypeScript to provide better intellisense and easier e
 # Prerequisites
 
 * MongoDB server
+
+# API
+* GET /tasks
+  * List all available tasks
+* POST /tasks
+  * Create a task
+* GET /tasks/:taskId
+  * Gets the single task identified by {taskId}
+* PUT /tasks/:taskId
+  * Updates the task identified by {taskId}
+* DELETE /tasks/:taskId
+  * Deletes the task identified by {taskId}
