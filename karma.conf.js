@@ -31,6 +31,9 @@ module.exports = function(config) {
             '**/*.ts': ['karma-typescript']
         },
 
+        karmaTypescriptConfig: {
+            tsconfig: 'tsconfig.json'
+        },
 
         // test results reporter to use
         // possible values: 'dots', 'progress'
