@@ -14,7 +14,7 @@ mongoose.model('Tasks', TodoListModels.initTaskSchema());
 // Setup mongoose
 (mongoose as any).Promise = global.Promise;
 mongoose.connect('mongodb://localhost/Tododb', {
-	useMongoClient: true
+    useMongoClient: true
 });
 
 // Configure the express app
@@ -26,7 +26,7 @@ TodoListRoutes.configureRoutes(app);
 
 // Add middleware to better catch and handle errors
 app.use(function(req, res) {
-	res.status(404).send({url: req.originalUrl + ' not found'})
+    res.status(404).send({url: req.originalUrl + ' not found'})
 });
 
 app.listen(port);

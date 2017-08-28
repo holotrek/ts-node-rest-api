@@ -12,7 +12,7 @@ However, it is written in TypeScript to provide better intellisense and easier e
   * If on Windows,
     * Create directory C:\data\db
     * Add the following (YMMV, depending on version) to your PATH enviornment variable: `C:\Program Files\MongoDB\Server\3.4\bin`
-	* Open cmd prompt and type `mongod`
+    * Open cmd prompt and type `mongod`
 
 # Install
 

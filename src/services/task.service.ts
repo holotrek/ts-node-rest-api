@@ -3,13 +3,13 @@ import * as mongoose from 'mongoose';
 import { TaskServiceInterface } from './task.service.interface';
 
 export class TaskService implements TaskServiceInterface {
-	private static Task: mongoose.Model<any>;
+    private static Task: mongoose.Model<any>;
 
-	constructor() {
-		TaskService.Task = mongoose.model('Tasks')
-	}
+    constructor() {
+        TaskService.Task = mongoose.model('Tasks')
+    }
 
-	public listAllTasks(): Promise<any> {
+    public listAllTasks(): Promise<any> {
         return new Promise<any>((resolve: any, reject: any) => {
             TaskService.Task.find({}, (err: any, task: any) => {
                 if (err) {

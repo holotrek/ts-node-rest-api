@@ -1,12 +1,12 @@
 import { TaskServiceInterface } from '../../services/task.service.interface';
 
 export class TodoListController {
-	constructor(
+    constructor(
         private taskService: TaskServiceInterface
     ) {
-	}
+    }
 
-	public listAllTasks(res: any): void {
+    public listAllTasks(res: any): void {
         this.taskService.listAllTasks()
             .then(data => res.json(data))
             .catch(err => res.err(err));
