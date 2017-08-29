@@ -24,7 +24,7 @@ However, it is written in TypeScript to provide better intellisense and easier e
 
 `npm start`
 
-# Test (requires npm 4.x.x)
+# Test
 
 `npm test`
 
