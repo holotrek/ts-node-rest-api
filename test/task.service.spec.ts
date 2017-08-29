@@ -4,7 +4,7 @@ import * as mongoose from 'mongoose';
 import { TodoListModels } from '../src/api/models/todo-list-models';
 import { TaskService } from '../src/services/task.service';
 
-let mockgoose = new Mockgoose(mongoose);
+const mockgoose = new Mockgoose(mongoose);
 
 describe('Task Service', () => {
     let taskService: TaskService;
