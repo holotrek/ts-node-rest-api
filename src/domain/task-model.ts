@@ -1,11 +1,16 @@
-export const TaskModel = {
+export class TaskModel {
+    name: string;
+    status: string;
+    created: number;
+    updated: number;
+    createdBy: string;
+    updatedBy: string;
+}
+
+export const TaskSchema = {
     name: {
         type: String,
-        required: 'Kindly enter the name of the task'
-    },
-    Created_date: {
-        type: Date,
-        default: Date.now
+        required: 'Task Name is required.'
     },
     status: {
         type: [{
@@ -13,5 +18,19 @@ export const TaskModel = {
             enum: ['pending', 'ongoing', 'completed']
         }],
         default: ['pending']
+    },
+    created: {
+        type: Number,
+        default: Date.now()
+    },
+    updated: {
+        type: Number
+    },
+    createdBy: {
+        type: String,
+        required: 'Created By is required.'
+    },
+    updatedBy: {
+        type: String
     }
 };

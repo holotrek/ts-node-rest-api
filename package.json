@@ -1,45 +1,44 @@
 {
-    "name": "ts-node-rest-api",
-    "version": "1.0.0",
-    "description": "This is a simple app created to try out a Node.js REST API that interacts with MongoDB by following this tutorial:",
-    "main": "./dist/server.js",
-    "scripts": {
-        "start": "tsc & nodemon ./dist/server.js",
-        "test": "karma start",
-        "build": "tsc"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/holotrek/ts-node-rest-api.git"
-    },
-    "author": "Evan Kaiser",
-    "license": "MIT",
-    "bugs": {
-        "url": "https://github.com/holotrek/ts-node-rest-api/issues"
-    },
-    "homepage": "https://github.com/holotrek/ts-node-rest-api#readme",
-    "devDependencies": {
-        "@types/body-parser": "^1.16.5",
-        "@types/express": "^4.0.37",
-        "@types/jasmine": "^2.5.54",
-        "@types/mongoose": "^4.7.21",
-        "@types/node": "^8.0.25",
-        "jasmine-core": "^2.8.0",
-        "jasmine-spec-reporter": "^4.2.1",
-        "karma": "^1.7.0",
-        "karma-chrome-launcher": "^2.2.0",
-        "karma-cli": "^1.0.1",
-        "karma-jasmine": "^1.1.0",
-        "karma-remap-istanbul": "^0.6.0",
-        "karma-typescript": "^3.0.5",
-        "mockgoose": "^7.3.3",
-        "nodemon": "^1.11.0",
-        "tslint": "^5.6.0",
-        "typescript": "^2.4.2"
-    },
-    "dependencies": {
-        "body-parser": "^1.17.2",
-        "express": "^4.15.4",
-        "mongoose": "^4.11.8"
-    }
+  "name": "ts-node-rest-api",
+  "version": "1.0.0",
+  "description": "This is a simple app created to try out a Node.js REST API that interacts with MongoDB by following this tutorial:",
+  "main": "./dist/server.js",
+  "scripts": {
+    "start": "tsc & nodemon ./dist/server.js",
+    "test": "karma start",
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/holotrek/ts-node-rest-api.git"
+  },
+  "author": "Evan Kaiser",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/holotrek/ts-node-rest-api/issues"
+  },
+  "homepage": "https://github.com/holotrek/ts-node-rest-api#readme",
+  "devDependencies": {
+    "@types/body-parser": "^1.16.5",
+    "@types/express": "^4.0.37",
+    "@types/jasmine": "^2.5.54",
+    "@types/mongoose": "^4.7.21",
+    "@types/node": "^8.0.25",
+    "jasmine-core": "^2.8.0",
+    "jasmine-spec-reporter": "^4.2.1",
+    "karma": "^1.7.0",
+    "karma-chrome-launcher": "^2.2.0",
+    "karma-cli": "^1.0.1",
+    "karma-jasmine": "^1.1.0",
+    "karma-remap-istanbul": "^0.6.0",
+    "karma-typescript": "^3.0.5",
+    "nodemon": "^1.11.0",
+    "tslint": "^5.6.0",
+    "typescript": "^2.4.2"
+  },
+  "dependencies": {
+    "body-parser": "^1.17.2",
+    "express": "^4.15.4",
+    "mongoose": "^4.11.8"
+  }
 }
