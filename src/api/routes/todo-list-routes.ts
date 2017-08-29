@@ -1,14 +1,15 @@
 import * as express from 'express';
 
 import { TaskRepository } from '../../data/task-repository';
+import { UserProviderInterface } from '../../providers/user.provider.interface';
 import { TaskService } from '../../services/task.service';
 import { TodoListController } from '../controllers/todo-list-controller';
 
 export class TodoListRoutes {
-    public static configureRoutes(app: express.Express): void {
+    public static configureRoutes(app: express.Express, userProvider: UserProviderInterface): void {
 
         // TODO: Remove need to manually configure dependencies (using an IoC option: electrolyte / InversifyJS?)
-        const controller = new TodoListController(new TaskService(new TaskRepository()));
+        const controller = new TodoListController(new TaskService(new TaskRepository(), userProvider));
 
         app.route('/tasks')
             .get((req, res) => controller.listAllTasks(res))

@@ -1,9 +1,12 @@
+import { TaskModel } from '../domain/task-model';
+import { UserProviderInterface } from '../providers/user.provider.interface';
 import { TaskRepositoryInterface } from '../repositories/task-repository.interface';
 import { TaskServiceInterface } from './task.service.interface';
 
 export class TaskService implements TaskServiceInterface {
     constructor(
-        private repository: TaskRepositoryInterface
+        private repository: TaskRepositoryInterface,
+        private userProvider: UserProviderInterface
     ) {
     }
 
@@ -21,11 +24,17 @@ export class TaskService implements TaskServiceInterface {
     }
 
     public createTask(request: any): Promise<any> {
-        return this.repository.createTask(request.body);
+        const task = request.body as TaskModel;
+        task.created = Date.now();
+        task.createdBy = this.userProvider.userName;
+        return this.repository.createTask(task);
     }
 
     public updateTask(request: any): Promise<any> {
-        return this.repository.updateTask(request.params.taskId, request.body);
+        const task = request.body as TaskModel;
+        task.updated = Date.now();
+        task.updatedBy = this.userProvider.userName;
+        return this.repository.updateTask(request.params.taskId, task);
     }
 
     public deleteTask(request: any): Promise<any> {

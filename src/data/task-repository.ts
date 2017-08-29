@@ -23,7 +23,7 @@ export class TaskRepository implements TaskRepositoryInterface {
         });
     }
 
-    getTask(id: string | number): Promise<TaskModel> {
+    getTask(id: string): Promise<TaskModel> {
         return new Promise<TaskModel>((resolve: any, reject: any) => {
             TaskRepository.Task.findById(id, (err: any, task: any) => {
                 if (err) {
@@ -50,7 +50,7 @@ export class TaskRepository implements TaskRepositoryInterface {
         });
     }
 
-    updateTask(id: string | number, task: TaskModel): Promise<TaskModel> {
+    updateTask(id: string, task: TaskModel): Promise<TaskModel> {
         return new Promise<TaskModel>((resolve: any, reject: any) => {
             TaskRepository.Task.findOneAndUpdate({ _id: id }, task, { new: true }, (err: any, taskOut: any) => {
                 if (err) {
@@ -63,7 +63,7 @@ export class TaskRepository implements TaskRepositoryInterface {
         });
     }
 
-    deleteTask(id: string | number): Promise<any> {
+    deleteTask(id: string): Promise<any> {
         return new Promise<any>((resolve: any, reject: any) => {
             TaskRepository.Task.remove({ _id: id }, err => {
                 if (err) {
