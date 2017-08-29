@@ -1,6 +1,6 @@
 export class TaskModel {
     name: string;
-    status: string;
+    status: string[];
     created: number;
     updated: number;
     createdBy: string;
@@ -24,7 +24,8 @@ export const TaskSchema = {
         default: Date.now()
     },
     updated: {
-        type: Number
+        type: Number,
+        default: Date.now()
     },
     createdBy: {
         type: String,

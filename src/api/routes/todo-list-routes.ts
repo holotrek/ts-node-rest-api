@@ -11,12 +11,12 @@ export class TodoListRoutes {
         const controller = new TodoListController(new TaskService(new TaskRepository()));
 
         app.route('/tasks')
-            .get(controller.listAllTasks)
-            .post(controller.createTask);
+            .get((req, res) => controller.listAllTasks(res))
+            .post((req, res) => controller.createTask(req, res));
 
         app.route('/tasks/:taskId')
-            .get(controller.getTask)
-            .put(controller.updateTask)
-            .delete(controller.deleteTask);
+            .get((req, res) => controller.getTask(req, res))
+            .put((req, res) => controller.updateTask(req, res))
+            .delete((req, res) => controller.deleteTask(req, res));
     }
 }
