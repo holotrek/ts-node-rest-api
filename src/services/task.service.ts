@@ -12,7 +12,12 @@ export class TaskService implements TaskServiceInterface {
     }
 
     public getTask(request: any): Promise<any> {
-        return this.repository.getTask(request.params.taskId);
+        if (request && request.params && request.params.taskId) {
+            return this.repository.getTask(request.params.taskId);
+        }
+        else {
+            return Promise.reject('The Request Parameter {taskId} is required.');
+        }
     }
 
     public createTask(request: any): Promise<any> {
