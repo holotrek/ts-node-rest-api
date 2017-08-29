@@ -12,7 +12,7 @@ However, it is written in TypeScript to provide better intellisense and easier e
   * If on Windows,
     * Create directory C:\data\db
     * Add the following (YMMV, depending on version) to your PATH enviornment variable: `C:\Program Files\MongoDB\Server\3.4\bin`
-	* Open cmd prompt and type `mongod`
+    * Open cmd prompt and type `mongod`
 
 # Install
 
@@ -24,7 +24,7 @@ However, it is written in TypeScript to provide better intellisense and easier e
 
 `npm start`
 
-# Test (TBD)
+# Test (requires npm 4.x.x)
 
 `npm test`
 
@@ -32,24 +32,14 @@ However, it is written in TypeScript to provide better intellisense and easier e
 
 * MongoDB server
 
-# Notes for later...
-
-## TODO
-
-* Setup Karma and some tests
-
-## Commands used to create the files in this project
-
-`npm init`
-
-`npm i -g editorconfig-cli`
-
-`ec init`
-
-`npm i -g typescript`
-
-`tsc --init`
-
-`npm i -g tslint`
-
-`tslint --init`
+# API
+* GET /tasks
+  * List all available tasks
+* POST /tasks
+  * Create a task
+* GET /tasks/:taskId
+  * Gets the single task identified by {taskId}
+* PUT /tasks/:taskId
+  * Updates the task identified by {taskId}
+* DELETE /tasks/:taskId
+  * Deletes the task identified by {taskId}
