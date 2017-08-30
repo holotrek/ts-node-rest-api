@@ -1,17 +1,18 @@
+import { UserModel } from '../domain/user-model';
 import { UserProviderInterface } from './user.provider.interface';
 
 export class UserProvider implements UserProviderInterface {
-    private _userName: string;
+    private _user: UserModel;
 
     public get userName(): string {
-        return this._userName;
+        return this._user.name;
     }
 
     public get isAuthenticated(): boolean {
-        return !!this._userName;
+        return !!this._user;
     }
 
-    public setCurrentUser(userName?: string): void {
-        this._userName = userName || '';
+    public setCurrentUser(user?: any): void {
+        this._user = user || null;
     }
 }

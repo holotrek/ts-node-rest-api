@@ -24,6 +24,8 @@
         "@types/jasmine": "^2.5.54",
         "@types/mongoose": "^4.7.21",
         "@types/node": "^8.0.25",
+        "@types/passport": "^0.3.4",
+        "@types/passport-google-oauth2": "^0.1.1",
         "jasmine-core": "^2.8.0",
         "jasmine-spec-reporter": "^4.2.1",
         "karma": "^1.7.0",
@@ -41,6 +43,8 @@
         "express": "^4.15.4",
         "inversify": "^4.3.0",
         "mongoose": "^4.11.8",
+        "passport": "^0.4.0",
+        "passport-google-oauth2": "^0.1.6",
         "reflect-metadata": "^0.1.10"
     }
 }

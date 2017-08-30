@@ -10,11 +10,11 @@ export class TaskService implements TaskServiceInterface {
     ) {
     }
 
-    public listAllTasks(): Promise<any> {
+    public listAllTasks(): Promise<TaskModel[]> {
         return this.repository.getTasks({});
     }
 
-    public getTask(request: any): Promise<any> {
+    public getTask(request: any): Promise<TaskModel> {
         if (request && request.params && request.params.taskId) {
             return this.repository.getTask(request.params.taskId);
         }
@@ -23,14 +23,14 @@ export class TaskService implements TaskServiceInterface {
         }
     }
 
-    public createTask(request: any): Promise<any> {
+    public createTask(request: any): Promise<TaskModel> {
         const task = request.body as TaskModel;
         task.created = Date.now();
         task.createdBy = this.userProvider.userName;
         return this.repository.createTask(task);
     }
 
-    public updateTask(request: any): Promise<any> {
+    public updateTask(request: any): Promise<TaskModel> {
         const task = request.body as TaskModel;
         task.updated = Date.now();
         task.updatedBy = this.userProvider.userName;

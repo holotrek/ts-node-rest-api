@@ -1,5 +1,5 @@
 export interface UserProviderInterface {
     userName: string;
     isAuthenticated: boolean;
-    setCurrentUser(userName?: string): void;
+    setCurrentUser(user?: any): void;
 }
