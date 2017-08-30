@@ -57,9 +57,10 @@ class GoogleAuthMiddleware implements AuthMiddlewareInterface {
                 ]
             }));
             app.get('/auth/google/callback', passport.authenticate('google', {
-                successRedirect: `${this.environment.clientAuthUrl}/auth/success`,
                 failureRedirect: `${this.environment.clientAuthUrl}/auth/failure`,
-            }));
+            }), (req, res) => {
+                res.redirect(`${this.environment.clientAuthUrl}/auth/success/${req.user.authId}?accessToken=${req.user.accessToken}`);
+            });
 
             useAuth = true;
         }
