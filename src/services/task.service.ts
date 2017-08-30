@@ -1,6 +1,6 @@
 import { TaskModel } from '../domain/task-model';
 import { UserProviderInterface } from '../providers/user.provider.interface';
-import { TaskRepositoryInterface } from '../repositories/task-repository.interface';
+import { TaskRepositoryInterface } from '../repositories/task.repository.interface';
 import { TaskServiceInterface } from './task.service.interface';
 
 export class TaskService implements TaskServiceInterface {

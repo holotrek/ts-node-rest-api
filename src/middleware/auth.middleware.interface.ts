@@ -1,12 +1,13 @@
 import * as express from 'express';
 
 import { UserProviderInterface } from '../providers/user.provider.interface';
-import { UserServiceInterface } from '../services/user.service.interface';
+import { UserRepositoryInterface } from '../repositories/user.repository.interface';
 
 export interface AuthMiddlewareInterface {
+    strategyId: string;
     initialize(app: express.Express): void;
 }
 
 export interface AuthFactory {
-    create(environment: any, userProvider: UserProviderInterface, userService: UserServiceInterface): AuthMiddlewareInterface;
+    create(environment: any, userProvider: UserProviderInterface, userService: UserRepositoryInterface): AuthMiddlewareInterface;
 }

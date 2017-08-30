@@ -1,4 +1,6 @@
-export class TaskModel {
+import { MongoModel } from './mongo-model';
+
+export class TaskModel extends MongoModel {
     name: string;
     status: string[];
     created: number;

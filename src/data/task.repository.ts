@@ -1,7 +1,7 @@
 import * as mongoose from 'mongoose';
 
 import { TaskModel } from '../domain/task-model';
-import { TaskRepositoryInterface } from '../repositories/task-repository.interface';
+import { TaskRepositoryInterface } from '../repositories/task.repository.interface';
 
 export class TaskRepository implements TaskRepositoryInterface {
     private static Task: mongoose.Model<any>;

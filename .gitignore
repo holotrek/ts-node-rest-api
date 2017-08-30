@@ -60,3 +60,4 @@ typings/
 # Custom
 dist/
 *.private.ts
+.vscode

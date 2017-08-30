@@ -1,6 +1,6 @@
 import * as express from 'express';
 
-import { TaskRepository } from '../../data/task-repository';
+import { TaskRepository } from '../../data/task.repository';
 import { UserProviderInterface } from '../../providers/user.provider.interface';
 import { TaskService } from '../../services/task.service';
 import { TodoListController } from '../controllers/todo-list-controller';

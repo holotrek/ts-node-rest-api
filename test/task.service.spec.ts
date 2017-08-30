@@ -1,5 +1,5 @@
 import { TaskModel } from '../src/domain/task-model';
-import { TaskRepositoryInterface } from '../src/repositories/task-repository.interface';
+import { TaskRepositoryInterface } from '../src/repositories/task.repository.interface';
 import { TaskService } from '../src/services/task.service';
 import { UserProviderInterface } from '../src/providers/user.provider.interface';
 

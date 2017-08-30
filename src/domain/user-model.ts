@@ -1,7 +1,11 @@
-export class UserModel {
+import { MongoModel } from './mongo-model';
+
+export class UserModel extends MongoModel {
     name: string;
     authId: string;
-    authStrategy: string;
+    strategyId: string;
+    accessToken: string;
+    refreshToken: string;
     created: number;
     updated: number;
     createdBy: string;
@@ -17,10 +21,16 @@ export const UserSchema = {
         type: String,
         required: 'Auth ID is required.'
     },
-    authStrategy: {
+    strategyId: {
         type: String,
         enum: ['google', 'twitter', 'github'],
         required: 'Auth Strategy is required.'
+    },
+    accessToken: {
+        type: String
+    },
+    refreshToken: {
+        type: String
     },
     created: {
         type: Number,

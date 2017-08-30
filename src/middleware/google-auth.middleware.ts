@@ -2,21 +2,24 @@ import * as express from 'express';
 import * as passport from 'passport';
 import * as googleStrategy from 'passport-google-oauth2';
 
+import { UserModel } from '../domain/user-model';
 import { UserProviderInterface } from '../providers/user.provider.interface';
-import { UserServiceInterface } from '../services/user.service.interface';
-import { AuthMiddlewareInterface, AuthFactory } from './auth.middleware.interface';
+import { UserRepositoryInterface } from '../repositories/user.repository.interface';
+import { AuthFactory, AuthMiddlewareInterface } from './auth.middleware.interface';
 
 export class GoogleAuthFactory implements AuthFactory {
-    public create(environment: any, userProvider: UserProviderInterface, userService: UserServiceInterface): AuthMiddlewareInterface {
+    public create(environment: any, userProvider: UserProviderInterface, userService: UserRepositoryInterface): AuthMiddlewareInterface {
         return new GoogleAuthMiddleware(environment, userProvider, userService);
     }
 }
 
 class GoogleAuthMiddleware implements AuthMiddlewareInterface {
+    public readonly strategyId = 'google';
+
     constructor(
         private environment: any,
         private userProvider: UserProviderInterface,
-        private userService: UserServiceInterface
+        private userRepo: UserRepositoryInterface
     ) { }
 
     public initialize(app: express.Express): void {
@@ -30,44 +33,33 @@ class GoogleAuthMiddleware implements AuthMiddlewareInterface {
         }
         else {
             passport.use(new googleStrategy.Strategy({
-                    clientID: (process.env.GOOGLE_CLIENT_ID as string),
-                    clientSecret: (process.env.GOOGLE_CLIENT_SECRET as string),
-                    callbackURL: `${this.environment.serverUrl}/auth/google/callback`,
-                    passReqToCallback: true
-                },
-                (request, accessToken, refreshToken, profile, done) => {
-                    console.log(profile);
-                    this.userService.findOrCreate({ googleId: profile.id })
-                        .then(user => {
-                            this.userProvider.setCurrentUser(user);
-                            done('', user);
-                        })
-                        .catch(err => {
-                            this.userProvider.setCurrentUser();
-                            done(err)
-                        });
-                }
-            ));
-            app.get('/auth/google',
-                passport.authenticate('google', {
-                    scope: [
-                        'https://www.googleapis.com/auth/plus.login',
-                        'https://www.googleapis.com/auth/plus.profile.emails.read'
-                    ]
-                }
-            ));
-            app.get('/auth/google/callback',
-                passport.authenticate('google', {
-                    successRedirect: '/auth/google/success',
-                    failureRedirect: '/auth/google/failure'
+                clientID: this.environment.googleId,
+                clientSecret: this.environment.googleSecret,
+                callbackURL: `${this.environment.serverUrl}/auth/google/callback`,
+                passReqToCallback: true
+            }, (request, accessToken, refreshToken, profile, done) => {
+                const user = new UserModel();
+                user.strategyId = this.strategyId;
+                user.authId = profile.id;
+                user.name = profile.displayName;
+                user.accessToken = accessToken;
+                user.refreshToken = refreshToken;
+                user.created = Date.now();
+                user.createdBy = user.name;
+                this.userRepo.getByAuthOrCreateUser(user).then(created => {
+                    done(null, created);
+                });
             }));
-            app.get('/auth/google/success', (req, res) => {
-                console.log(req);
-                res.redirect(`${this.environment.clientAuthUrl}/auth/success`);
-            });
-            app.get('/auth/google/success', (req, res) => {
-                res.redirect(`${this.environment.clientAuthUrl}/auth/failure`);
-            });
+            app.get('/auth/google', passport.authenticate('google', {
+                scope: [
+                    'https://www.googleapis.com/auth/plus.login',
+                    'https://www.googleapis.com/auth/plus.profile.emails.read'
+                ]
+            }));
+            app.get('/auth/google/callback', passport.authenticate('google', {
+                successRedirect: `${this.environment.clientAuthUrl}/auth/success`,
+                failureRedirect: `${this.environment.clientAuthUrl}/auth/failure`,
+            }));
 
             useAuth = true;
         }
