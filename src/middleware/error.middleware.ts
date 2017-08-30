@@ -14,7 +14,8 @@ export class ErrorMiddleware {
     public internalServerError(environment: any, err: any, req: express.Request, res: express.Response, next: express.NextFunction) {
         // Show error without details (and log them) for 500 errors
         res.status(500).send({error: environment.serverErrorMessage});
-        // TODO: Log ${err}
+        console.error(err);
+        // TODO: Log in a file?
         next();
     }
 }

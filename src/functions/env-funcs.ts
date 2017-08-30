@@ -4,4 +4,6 @@ export function mergeEnvironments(mainEnv: any, updatedEnv: any) {
             mainEnv[e] = updatedEnv[e];
         }
     }
+
+    return mainEnv;
 }

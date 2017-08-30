@@ -18,6 +18,29 @@ However, it is written in TypeScript to provide better intellisense and easier e
 
 `npm install`
 
+## Note on environments
+
+* For settings you want to use in every environment, add them to [environments/env.ts](environments/env.ts).
+* For environment-specific settings, the server will read from the particular env.{environment}.ts file for that environment, which is determined through the use of the user/system enviornment variable `NODE_ENVIRONMENT`. For example, if `NODE_ENVIRONMENT="Development"`, the settings from env.development.ts will override and/or be merged with settings from env.js
+
+## oAuth
+
+The following auth providers are setup in the code by default and can be enabled by following the applicable list of steps below:
+
+### Google Auth
+
+* Two keys exist for Google Auth, Client ID and Client Secret. If you are not using Source Control, you may be able to get away with putting them into one of the environment files (env.ts). However, this is not safe for committed code, so the alternative is to use the user/system environment variable option. Both options require setting `useGoogleAuth: true` in one of the env.ts files.
+  * **Environment Files Option**
+    * Add the following keys into one of the env.ts files:
+      ```
+      googleId: '<your google client id>',
+      googleSecret: '<your google client secret>'
+      ```
+  * **User/System Environment Variables Option**
+    * Set the following environment variables:
+      * `GOOGLE_CLIENT_ID="<your google client id>"`
+      * `GOOGLE_CLIENT_SECRET="<your google client secret>"`
+
 # Build & Run
 
 * Make sure MongoDB is running ( `mongod` ) and then run:
@@ -33,6 +56,8 @@ However, it is written in TypeScript to provide better intellisense and easier e
 * MongoDB server
 
 # API
+
+## Tasks
 * GET /tasks
   * List all available tasks
 * POST /tasks
@@ -43,3 +68,6 @@ However, it is written in TypeScript to provide better intellisense and easier e
   * Updates the task identified by {taskId}
 * DELETE /tasks/:taskId
   * Deletes the task identified by {taskId}
+
+## Auth
+* GET /auth/google/authenticate
