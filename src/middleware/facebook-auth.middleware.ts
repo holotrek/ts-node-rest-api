@@ -2,10 +2,10 @@ import * as express from 'express';
 import * as passport from 'passport';
 import * as facebookStrategy from 'passport-facebook';
 
-import { UserModel } from '../domain/user-model';
 import { UserProviderInterface } from '../providers/user.provider.interface';
 import { UserRepositoryInterface } from '../repositories/user.repository.interface';
 import { AuthFactory, AuthMiddlewareInterface } from './auth.middleware.interface';
+import { OAuthMiddleware } from './oauth.middleware';
 
 export class FacebookAuthFactory implements AuthFactory {
     public create(environment: any, userProvider: UserProviderInterface, userService: UserRepositoryInterface): AuthMiddlewareInterface {
@@ -13,15 +13,17 @@ export class FacebookAuthFactory implements AuthFactory {
     }
 }
 
-class FacebookAuthMiddleware implements AuthMiddlewareInterface {
+class FacebookAuthMiddleware extends OAuthMiddleware implements AuthMiddlewareInterface {
     public readonly strategyId = 'facebook';
     public enabled = false;
 
     constructor(
-        private environment: any,
-        private userProvider: UserProviderInterface,
-        private userRepo: UserRepositoryInterface
-    ) { }
+        environment: any,
+        userProvider: UserProviderInterface,
+        userRepo: UserRepositoryInterface
+    ) {
+        super(environment, userProvider, userRepo);
+    }
 
     public initialize(app: express.Express): void {
         let error = '';
@@ -36,25 +38,25 @@ class FacebookAuthMiddleware implements AuthMiddlewareInterface {
                 clientID: this.environment.facebookId,
                 clientSecret: this.environment.facebookSecret,
                 callbackURL: `${this.environment.serverUrl}/auth/facebook/callback`,
-            }, (accessToken, refreshToken, profile, done) => {
-                const user = new UserModel();
-                user.strategyId = this.strategyId;
-                user.authId = profile.id;
-                user.name = profile.displayName;
-                user.accessToken = accessToken;
-                user.refreshToken = refreshToken;
-                user.created = Date.now();
-                user.createdBy = user.name;
-                this.userRepo.getByAuthOrCreateUser(user).then(created => {
-                    done(null, created);
-                });
-            }));
+            }, this.verify));
+
             app.get('/auth/facebook', passport.authenticate('facebook'));
+
             app.get('/auth/facebook/callback', passport.authenticate('facebook', {
                 failureRedirect: `${this.environment.clientAuthUrl}/auth/failure`,
             }), (req, res) => {
-                res.redirect(`${this.environment.clientAuthUrl}/auth/success/${req.user.authId}?accessToken=${req.user.accessToken}`);
+                res.cookie('auth_strategy', this.strategyId);
+                res.cookie('auth_id', req.user.authId);
+                res.cookie('auth_accessToken', req.user.accessToken);
+                res.cookie('auth_refreshToken', req.user.refreshToken);
+                res.redirect(`${this.environment.clientAuthUrl}/auth/success`);
             });
+
+            const FacebookTokenStrategy = require('passport-facebook-token');
+            passport.use(new FacebookTokenStrategy({
+                clientID: this.environment.facebookId,
+                clientSecret: this.environment.facebookSecret
+            }, this.verify));
 
             this.enabled = true;
         }
@@ -65,4 +67,6 @@ class FacebookAuthMiddleware implements AuthMiddlewareInterface {
             });
         }
     }
+
+    public isAuthenticated = passport.authenticate('facebook-token');
 }

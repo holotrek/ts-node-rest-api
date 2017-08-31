@@ -7,6 +7,7 @@ export interface AuthMiddlewareInterface {
     strategyId: string;
     enabled: boolean;
     initialize(app: express.Express): void;
+    isAuthenticated: express.Handler;
 }
 
 export interface AuthFactory {

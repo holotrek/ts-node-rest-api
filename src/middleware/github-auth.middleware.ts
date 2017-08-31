@@ -6,6 +6,7 @@ import { UserModel } from '../domain/user-model';
 import { UserProviderInterface } from '../providers/user.provider.interface';
 import { UserRepositoryInterface } from '../repositories/user.repository.interface';
 import { AuthFactory, AuthMiddlewareInterface } from './auth.middleware.interface';
+import { OAuthMiddleware } from './oauth.middleware';
 
 export class GithubAuthFactory implements AuthFactory {
     public create(environment: any, userProvider: UserProviderInterface, userService: UserRepositoryInterface): AuthMiddlewareInterface {
@@ -13,15 +14,17 @@ export class GithubAuthFactory implements AuthFactory {
     }
 }
 
-class GithubAuthMiddleware implements AuthMiddlewareInterface {
+class GithubAuthMiddleware extends OAuthMiddleware implements AuthMiddlewareInterface {
     public readonly strategyId = 'github';
     public enabled = false;
 
     constructor(
-        private environment: any,
-        private userProvider: UserProviderInterface,
-        private userRepo: UserRepositoryInterface
-    ) { }
+        environment: any,
+        userProvider: UserProviderInterface,
+        userRepo: UserRepositoryInterface
+    ) {
+        super(environment, userProvider, userRepo);
+    }
 
     public initialize(app: express.Express): void {
         let error = '';
@@ -36,25 +39,25 @@ class GithubAuthMiddleware implements AuthMiddlewareInterface {
                 clientID: this.environment.githubId,
                 clientSecret: this.environment.githubSecret,
                 callbackURL: `${this.environment.serverUrl}/auth/github/callback`,
-            }, (accessToken, refreshToken, profile, done) => {
-                const user = new UserModel();
-                user.strategyId = this.strategyId;
-                user.authId = profile.id;
-                user.name = profile.displayName;
-                user.accessToken = accessToken;
-                user.refreshToken = refreshToken;
-                user.created = Date.now();
-                user.createdBy = user.name;
-                this.userRepo.getByAuthOrCreateUser(user).then(created => {
-                    done(null, created);
-                });
-            }));
+            }, this.verify));
+
             app.get('/auth/github', passport.authenticate('github', { scope: [ 'user:email' ] }));
+
             app.get('/auth/github/callback', passport.authenticate('github', {
                 failureRedirect: `${this.environment.clientAuthUrl}/auth/failure`,
             }), (req, res) => {
-                res.redirect(`${this.environment.clientAuthUrl}/auth/success/${req.user.authId}?accessToken=${req.user.accessToken}`);
+                res.cookie('auth_strategy', this.strategyId);
+                res.cookie('auth_id', req.user.authId);
+                res.cookie('auth_accessToken', req.user.accessToken);
+                res.cookie('auth_refreshToken', req.user.refreshToken);
+                res.redirect(`${this.environment.clientAuthUrl}/auth/success`);
             });
+
+            const GithubTokenStrategy = require('passport-github-token');
+            passport.use(new GithubTokenStrategy({
+                clientID: this.environment.githubId,
+                clientSecret: this.environment.githubSecret
+            }, this.verify));
 
             this.enabled = true;
         }
@@ -65,4 +68,6 @@ class GithubAuthMiddleware implements AuthMiddlewareInterface {
             });
         }
     }
+
+    public isAuthenticated = passport.authenticate('github-token');
 }

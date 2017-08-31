@@ -48,4 +48,15 @@ export class AuthMiddleware implements AuthMiddlewareInterface {
     public getEnabledAuthStrategies(): string[] {
         return this._middleware.filter(x => x.enabled).map(x => x.strategyId);
     }
+
+    public isAuthenticated = (req: express.Request, res: express.Response, next: express.NextFunction) => {
+        const strategy = req.headers['strategy'];
+        const middleware = this._middleware.find(x => x.strategyId === strategy);
+        if (middleware) {
+            middleware.isAuthenticated(req, res, next);
+        }
+        else {
+            res.status(401);
+        }
+    }
 }

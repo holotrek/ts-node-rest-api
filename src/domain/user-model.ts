@@ -26,12 +26,16 @@ export const UserSchema = {
         enum: ['facebook', 'github', 'google'],
         required: 'Auth Strategy is required.'
     },
-    accessToken: {
-        type: String
-    },
-    refreshToken: {
-        type: String
-    },
+    tokens: [
+        {
+            accessToken: {
+                type: String
+            },
+            refreshToken: {
+                type: String
+            }
+        }
+    ],
     created: {
         type: Number,
         default: Date.now()

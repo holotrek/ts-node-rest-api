@@ -6,6 +6,7 @@ import { UserModel } from '../domain/user-model';
 import { UserProviderInterface } from '../providers/user.provider.interface';
 import { UserRepositoryInterface } from '../repositories/user.repository.interface';
 import { AuthFactory, AuthMiddlewareInterface } from './auth.middleware.interface';
+import { OAuthMiddleware } from './oauth.middleware';
 
 export class GoogleAuthFactory implements AuthFactory {
     public create(environment: any, userProvider: UserProviderInterface, userService: UserRepositoryInterface): AuthMiddlewareInterface {
@@ -13,15 +14,17 @@ export class GoogleAuthFactory implements AuthFactory {
     }
 }
 
-class GoogleAuthMiddleware implements AuthMiddlewareInterface {
+class GoogleAuthMiddleware extends OAuthMiddleware implements AuthMiddlewareInterface {
     public readonly strategyId = 'google';
     public enabled = false;
 
     constructor(
-        private environment: any,
-        private userProvider: UserProviderInterface,
-        private userRepo: UserRepositoryInterface
-    ) { }
+        environment: any,
+        userProvider: UserProviderInterface,
+        userRepo: UserRepositoryInterface
+    ) {
+        super(environment, userProvider, userRepo);
+    }
 
     public initialize(app: express.Express): void {
         let error = '';
@@ -36,30 +39,30 @@ class GoogleAuthMiddleware implements AuthMiddlewareInterface {
                 clientID: this.environment.googleId,
                 clientSecret: this.environment.googleSecret,
                 callbackURL: `${this.environment.serverUrl}/auth/google/callback`,
-            }, (accessToken, refreshToken, profile, done) => {
-                const user = new UserModel();
-                user.strategyId = this.strategyId;
-                user.authId = profile.id;
-                user.name = profile.displayName;
-                user.accessToken = accessToken;
-                user.refreshToken = refreshToken;
-                user.created = Date.now();
-                user.createdBy = user.name;
-                this.userRepo.getByAuthOrCreateUser(user).then(created => {
-                    done(null, created);
-                });
-            }));
+            }, this.verify));
+
             app.get('/auth/google', passport.authenticate('google', {
                 scope: [
                     'https://www.googleapis.com/auth/plus.login',
                     'https://www.googleapis.com/auth/plus.profile.emails.read'
                 ]
             }));
+
             app.get('/auth/google/callback', passport.authenticate('google', {
                 failureRedirect: `${this.environment.clientAuthUrl}/auth/failure`,
             }), (req, res) => {
-                res.redirect(`${this.environment.clientAuthUrl}/auth/success/${req.user.authId}?accessToken=${req.user.accessToken}`);
+                res.cookie('auth_strategy', this.strategyId);
+                res.cookie('auth_id', req.user.authId);
+                res.cookie('auth_accessToken', req.user.accessToken);
+                res.cookie('auth_refreshToken', req.user.refreshToken);
+                res.redirect(`${this.environment.clientAuthUrl}/auth/success`);
             });
+
+            const GoogleTokenStrategy = require('passport-google-token').Strategy;
+            passport.use(new GoogleTokenStrategy({
+                clientID: this.environment.googleId,
+                clientSecret: this.environment.googleSecret
+            }, this.verify));
 
             this.enabled = true;
         }
@@ -70,4 +73,6 @@ class GoogleAuthMiddleware implements AuthMiddlewareInterface {
             });
         }
     }
+
+    public isAuthenticated = passport.authenticate('google-token');
 }

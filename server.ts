@@ -53,7 +53,7 @@ const authMiddleware = new AuthMiddleware([
 authMiddleware.initialize(app);
 
 // Register the routes
-TodoListRoutes.configureRoutes(app, userProvider);
+TodoListRoutes.configureRoutes(app, userProvider, authMiddleware);
 app.get('/auth/strategies', (req, res) => {
     res.json(authMiddleware.getEnabledAuthStrategies());
 });
