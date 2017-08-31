@@ -15,6 +15,7 @@ export class GoogleAuthFactory implements AuthFactory {
 
 class GoogleAuthMiddleware implements AuthMiddlewareInterface {
     public readonly strategyId = 'google';
+    public enabled = false;
 
     constructor(
         private environment: any,
@@ -23,7 +24,6 @@ class GoogleAuthMiddleware implements AuthMiddlewareInterface {
     ) { }
 
     public initialize(app: express.Express): void {
-        let useAuth = false;
         let error = '';
         if (!this.environment.useGoogleAuth) {
             error = 'Google Auth is disabled.';
@@ -61,10 +61,10 @@ class GoogleAuthMiddleware implements AuthMiddlewareInterface {
                 res.redirect(`${this.environment.clientAuthUrl}/auth/success/${req.user.authId}?accessToken=${req.user.accessToken}`);
             });
 
-            useAuth = true;
+            this.enabled = true;
         }
 
-        if (!useAuth) {
+        if (!this.enabled) {
             app.get('/auth/google', (req, res) => {
                 throw new Error(error);
             });

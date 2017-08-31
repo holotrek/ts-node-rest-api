@@ -15,6 +15,7 @@ export class GithubAuthFactory implements AuthFactory {
 
 class GithubAuthMiddleware implements AuthMiddlewareInterface {
     public readonly strategyId = 'github';
+    public enabled = false;
 
     constructor(
         private environment: any,
@@ -23,7 +24,6 @@ class GithubAuthMiddleware implements AuthMiddlewareInterface {
     ) { }
 
     public initialize(app: express.Express): void {
-        let useAuth = false;
         let error = '';
         if (!this.environment.useGithubAuth) {
             error = 'Github Auth is disabled.';
@@ -37,7 +37,6 @@ class GithubAuthMiddleware implements AuthMiddlewareInterface {
                 clientSecret: this.environment.githubSecret,
                 callbackURL: `${this.environment.serverUrl}/auth/github/callback`,
             }, (accessToken, refreshToken, profile, done) => {
-                console.log(profile);
                 const user = new UserModel();
                 user.strategyId = this.strategyId;
                 user.authId = profile.id;
@@ -57,10 +56,10 @@ class GithubAuthMiddleware implements AuthMiddlewareInterface {
                 res.redirect(`${this.environment.clientAuthUrl}/auth/success/${req.user.authId}?accessToken=${req.user.accessToken}`);
             });
 
-            useAuth = true;
+            this.enabled = true;
         }
 
-        if (!useAuth) {
+        if (!this.enabled) {
             app.get('/auth/github', (req, res) => {
                 throw new Error(error);
             });

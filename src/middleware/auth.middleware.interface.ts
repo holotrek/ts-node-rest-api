@@ -5,6 +5,7 @@ import { UserRepositoryInterface } from '../repositories/user.repository.interfa
 
 export interface AuthMiddlewareInterface {
     strategyId: string;
+    enabled: boolean;
     initialize(app: express.Express): void;
 }
 

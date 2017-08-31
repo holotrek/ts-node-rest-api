@@ -15,6 +15,7 @@ export class FacebookAuthFactory implements AuthFactory {
 
 class FacebookAuthMiddleware implements AuthMiddlewareInterface {
     public readonly strategyId = 'facebook';
+    public enabled = false;
 
     constructor(
         private environment: any,
@@ -23,7 +24,6 @@ class FacebookAuthMiddleware implements AuthMiddlewareInterface {
     ) { }
 
     public initialize(app: express.Express): void {
-        let useAuth = false;
         let error = '';
         if (!this.environment.useFacebookAuth) {
             error = 'Facebook Auth is disabled.';
@@ -37,7 +37,6 @@ class FacebookAuthMiddleware implements AuthMiddlewareInterface {
                 clientSecret: this.environment.facebookSecret,
                 callbackURL: `${this.environment.serverUrl}/auth/facebook/callback`,
             }, (accessToken, refreshToken, profile, done) => {
-                console.log(profile);
                 const user = new UserModel();
                 user.strategyId = this.strategyId;
                 user.authId = profile.id;
@@ -57,10 +56,10 @@ class FacebookAuthMiddleware implements AuthMiddlewareInterface {
                 res.redirect(`${this.environment.clientAuthUrl}/auth/success/${req.user.authId}?accessToken=${req.user.accessToken}`);
             });
 
-            useAuth = true;
+            this.enabled = true;
         }
 
-        if (!useAuth) {
+        if (!this.enabled) {
             app.get('/auth/facebook', (req, res) => {
                 throw new Error(error);
             });

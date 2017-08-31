@@ -75,4 +75,9 @@ However, it is written in TypeScript to provide better intellisense and easier e
   * Deletes the task identified by {taskId}
 
 ## Auth
-* GET /auth/google/authenticate
+* The following URLs are intended to be accessed via the web browser rather than an XHR request:
+  * /auth/github
+  * /auth/google
+  * /auth/facebook
+* GET /auth/strategies
+  * Gets a list of strategies that have been enabled for the app.

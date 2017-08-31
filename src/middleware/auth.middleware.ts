@@ -9,6 +9,7 @@ import { AuthFactory, AuthMiddlewareInterface } from './auth.middleware.interfac
 export class AuthMiddleware implements AuthMiddlewareInterface {
     private _middleware: AuthMiddlewareInterface[];
     public readonly strategyId = '';
+    public readonly enabled = true;
 
     constructor(
         private middlewareUsed: AuthFactory[],
@@ -42,5 +43,9 @@ export class AuthMiddleware implements AuthMiddlewareInterface {
                 done(`invalid auth id: ${id}`);
             }
         });
+    }
+
+    public getEnabledAuthStrategies(): string[] {
+        return this._middleware.filter(x => x.enabled).map(x => x.strategyId);
     }
 }

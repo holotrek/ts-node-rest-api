@@ -54,6 +54,9 @@ authMiddleware.initialize(app);
 
 // Register the routes
 TodoListRoutes.configureRoutes(app, userProvider);
+app.get('/auth/strategies', (req, res) => {
+    res.json(authMiddleware.getEnabledAuthStrategies());
+});
 
 // Add Middleware
 const errorMiddleware = new ErrorMiddleware(environment);
