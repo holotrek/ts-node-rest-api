@@ -23,7 +23,7 @@ export const UserSchema = {
     },
     strategyId: {
         type: String,
-        enum: ['google', 'twitter', 'github'],
+        enum: ['facebook', 'github', 'google'],
         required: 'Auth Strategy is required.'
     },
     accessToken: {

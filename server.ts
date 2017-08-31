@@ -9,7 +9,9 @@ import { UserRepository } from './src/data/user.repository';
 import * as ENV from './src/functions/env-funcs';
 import { AuthMiddleware } from './src/middleware/auth.middleware';
 import { ErrorMiddleware } from './src/middleware/error.middleware';
+import { GithubAuthFactory } from './src/middleware/github-auth.middleware';
 import { GoogleAuthFactory } from './src/middleware/google-auth.middleware';
+import { FacebookAuthFactory } from './src/middleware/facebook-auth.middleware';
 import { UserProvider } from './src/providers/user.provider';
 
 const app = express();
@@ -17,8 +19,13 @@ const port = process.env.PORT || 3000;
 const env = (process.env.NODE_ENVIRONMENT || 'development').toLowerCase();
 let environment = require(`./environments/env.js`).environment || {};
 environment = ENV.mergeEnvironments(environment, (require(`./environments/env.${env}.js`).environment || {}));
+environment.facebookId = environment.facebookId || process.env.FACEBOOK_CLIENT_ID || '';
+environment.facebookSecret = environment.facebookSecret || process.env.FACEBOOK_CLIENT_SECRET || '';
+environment.githubId = environment.githubId || process.env.GITHUB_CLIENT_ID || '';
+environment.githubSecret = environment.githubSecret || process.env.GITHUB_CLIENT_SECRET || '';
 environment.googleId = environment.googleId || process.env.GOOGLE_CLIENT_ID || '';
 environment.googleSecret = environment.googleSecret || process.env.GOOGLE_CLIENT_SECRET || '';
+console.log(environment);
 
 // Create the model schemas
 mongoose.model('Tasks', TodoListModels.initTaskSchema());
@@ -38,7 +45,11 @@ app.use(passport.session());
 
 // Setup Authentication
 const userProvider = new UserProvider();
-const authMiddleware = new AuthMiddleware([new GoogleAuthFactory()], environment, userProvider, new UserRepository());
+const authMiddleware = new AuthMiddleware([
+    new FacebookAuthFactory(),
+    new GithubAuthFactory(),
+    new GoogleAuthFactory()
+], environment, userProvider, new UserRepository());
 authMiddleware.initialize(app);
 
 // Register the routes

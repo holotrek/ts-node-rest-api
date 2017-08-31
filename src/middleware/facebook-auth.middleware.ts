@@ -1,20 +1,20 @@
 import * as express from 'express';
 import * as passport from 'passport';
-import * as googleStrategy from 'passport-google-oauth2';
+import * as facebookStrategy from 'passport-facebook';
 
 import { UserModel } from '../domain/user-model';
 import { UserProviderInterface } from '../providers/user.provider.interface';
 import { UserRepositoryInterface } from '../repositories/user.repository.interface';
 import { AuthFactory, AuthMiddlewareInterface } from './auth.middleware.interface';
 
-export class GoogleAuthFactory implements AuthFactory {
+export class FacebookAuthFactory implements AuthFactory {
     public create(environment: any, userProvider: UserProviderInterface, userService: UserRepositoryInterface): AuthMiddlewareInterface {
-        return new GoogleAuthMiddleware(environment, userProvider, userService);
+        return new FacebookAuthMiddleware(environment, userProvider, userService);
     }
 }
 
-class GoogleAuthMiddleware implements AuthMiddlewareInterface {
-    public readonly strategyId = 'google';
+class FacebookAuthMiddleware implements AuthMiddlewareInterface {
+    public readonly strategyId = 'facebook';
 
     constructor(
         private environment: any,
@@ -25,18 +25,19 @@ class GoogleAuthMiddleware implements AuthMiddlewareInterface {
     public initialize(app: express.Express): void {
         let useAuth = false;
         let error = '';
-        if (!this.environment.useGoogleAuth) {
-            error = 'Google Auth is disabled.';
+        if (!this.environment.useFacebookAuth) {
+            error = 'Facebook Auth is disabled.';
         }
-        else if (!this.environment.googleId || !this.environment.googleSecret) {
-            error = 'Google Auth is configured incorrectly.';
+        else if (!this.environment.facebookId || !this.environment.facebookSecret) {
+            error = 'Facebook Auth is configured incorrectly.';
         }
         else {
-            passport.use(new googleStrategy.Strategy({
-                clientID: this.environment.googleId,
-                clientSecret: this.environment.googleSecret,
-                callbackURL: `${this.environment.serverUrl}/auth/google/callback`,
+            passport.use(new facebookStrategy.Strategy({
+                clientID: this.environment.facebookId,
+                clientSecret: this.environment.facebookSecret,
+                callbackURL: `${this.environment.serverUrl}/auth/facebook/callback`,
             }, (accessToken, refreshToken, profile, done) => {
+                console.log(profile);
                 const user = new UserModel();
                 user.strategyId = this.strategyId;
                 user.authId = profile.id;
@@ -49,13 +50,8 @@ class GoogleAuthMiddleware implements AuthMiddlewareInterface {
                     done(null, created);
                 });
             }));
-            app.get('/auth/google', passport.authenticate('google', {
-                scope: [
-                    'https://www.googleapis.com/auth/plus.login',
-                    'https://www.googleapis.com/auth/plus.profile.emails.read'
-                ]
-            }));
-            app.get('/auth/google/callback', passport.authenticate('google', {
+            app.get('/auth/facebook', passport.authenticate('facebook'));
+            app.get('/auth/facebook/callback', passport.authenticate('facebook', {
                 failureRedirect: `${this.environment.clientAuthUrl}/auth/failure`,
             }), (req, res) => {
                 res.redirect(`${this.environment.clientAuthUrl}/auth/success/${req.user.authId}?accessToken=${req.user.accessToken}`);
@@ -65,7 +61,7 @@ class GoogleAuthMiddleware implements AuthMiddlewareInterface {
         }
 
         if (!useAuth) {
-            app.get('/auth/google', (req, res) => {
+            app.get('/auth/facebook', (req, res) => {
                 throw new Error(error);
             });
         }

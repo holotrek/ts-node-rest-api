@@ -25,21 +25,26 @@ However, it is written in TypeScript to provide better intellisense and easier e
 
 ## oAuth
 
-The following auth providers are setup in the code by default and can be enabled by following the applicable list of steps below:
+* oAuth strategies available:
+  * facebook
+  * github
+  * google
 
-### Google Auth
+* Two keys exist for each type of oAuth Strategy: Client ID and Client Secret. If you are not using Source Control, you may be able to get away with putting them into one of the environment files (env.ts). However, this is not safe for committed code, so the alternative is to use the user/system environment variable option.
 
-* Two keys exist for Google Auth, Client ID and Client Secret. If you are not using Source Control, you may be able to get away with putting them into one of the environment files (env.ts). However, this is not safe for committed code, so the alternative is to use the user/system environment variable option. Both options require setting `useGoogleAuth: true` in one of the env.ts files.
+* In the following instructions, replace `STRATEGY` with the particular name of the strategy to implement (case sensitivity is important)
   * **Environment Files Option**
     * Add the following keys into one of the env.ts files:
       ```
-      googleId: '<your google client id>',
-      googleSecret: '<your google client secret>'
+      useStrategyAuth: true,
+      strategyId: '<your client id>',
+      strategySecret: '<your client secret>'
       ```
   * **User/System Environment Variables Option**
+    * Add `useStrategyAuth: true` into one of the env.ts files.
     * Set the following environment variables:
-      * `GOOGLE_CLIENT_ID="<your google client id>"`
-      * `GOOGLE_CLIENT_SECRET="<your google client secret>"`
+      * `STRATEGY_CLIENT_ID="<your client id>"`
+      * `STRATEGY_CLIENT_SECRET="<your client secret>"`
 
 # Build & Run
 
