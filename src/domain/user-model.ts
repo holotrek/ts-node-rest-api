@@ -16,8 +16,6 @@ export class OAuthUserModel extends UserModel {
 }
 
 export class HttpAuthUserModel extends UserModel {
-    passwordHash: string;
-    passwordSalt: string;
     sessionToken: string;
     sessions: [
         {
@@ -25,6 +23,15 @@ export class HttpAuthUserModel extends UserModel {
             expires: number;
         }
     ];
+}
+
+export class BasicAuthUserModel extends HttpAuthUserModel {
+    passwordSalt: string;
+    passwordHash: string;
+}
+
+export class DigestAuthUserModel extends HttpAuthUserModel {
+    encryptedPassword: string;
 }
 
 export const UserSchema = {
@@ -47,10 +54,13 @@ export const UserSchema = {
     refreshToken: {
         type: String
     },
+    passwordSalt: {
+        type: String
+    },
     passwordHash: {
         type: String
     },
-    passwordSalt: {
+    encryptedPassword: {
         type: String
     },
     sessionToken: {

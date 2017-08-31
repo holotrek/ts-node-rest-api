@@ -1,7 +1,11 @@
 import * as crypto from 'crypto';
-import { HashProviderInterface } from './hash.provider.interface';
+import { CryptoProviderInterface } from './crypto.provider.interface';
 
-export class CryptoHashProvider implements HashProviderInterface {
+export class CryptoProvider implements CryptoProviderInterface {
+    constructor(
+        private encryptionKey: string
+    ) { }
+
     public hashPassword(password: string, algorithm: string = 'sha512'): [string, string] {
         const salt = this.genRandomString(8);
         const hash = crypto.createHmac(algorithm, salt);
@@ -14,6 +18,20 @@ export class CryptoHashProvider implements HashProviderInterface {
         const hash = crypto.createHmac(algorithm, salt);
         hash.update(password);
         return hash.digest('hex') === passwordHash;
+    }
+
+    public encrypt(plaintext: string, algorithm: string = 'des3'): string {
+        const cipher = crypto.createCipher(algorithm, this.encryptionKey);
+        let encrypted = cipher.update(plaintext, 'utf8', 'base64');
+        encrypted += cipher.final('base64');
+        return encrypted;
+    }
+
+    public decrypt(encrypted: string, algorithm: string = 'des3'): string {
+        const decipher = crypto.createDecipher(algorithm, this.encryptionKey);
+        let plaintext = decipher.update(encrypted, 'base64', 'utf8');
+        plaintext += decipher.final('utf8');
+        return plaintext;
     }
 
     private genRandomString(length: number) {

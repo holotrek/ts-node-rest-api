@@ -32,6 +32,6 @@ export abstract class OAuthMiddleware implements AuthMiddlewareInterface {
         user.createdBy = user.name;
         this.userService.repository.getByAuthOrCreateUser(user).then(created => {
             done(null, created);
-        });
+        }).catch(err => done(err));
     }
 }

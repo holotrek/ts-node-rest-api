@@ -9,11 +9,12 @@ import { UserRepository } from './src/data/user.repository';
 import * as ENV from './src/functions/env-funcs';
 import { AuthMiddleware } from './src/middleware/auth.middleware';
 import { BasicAuthFactory } from './src/middleware/basic-auth.middleware';
+import { DigestAuthFactory } from './src/middleware/digest-auth.middleware';
 import { ErrorMiddleware } from './src/middleware/error.middleware';
 import { FacebookAuthFactory } from './src/middleware/facebook-auth.middleware';
 import { GithubAuthFactory } from './src/middleware/github-auth.middleware';
 import { GoogleAuthFactory } from './src/middleware/google-auth.middleware';
-import { CryptoHashProvider } from './src/providers/hash.provider';
+import { CryptoProvider } from './src/providers/crypto.provider';
 import { UserProvider } from './src/providers/user.provider';
 import { UserService, UserServiceSettings } from './src/services/user.service';
 
@@ -49,11 +50,12 @@ app.use(passport.session());
 // Setup Authentication
 const userProvider = new UserProvider();
 const authMiddleware = new AuthMiddleware([
+    new BasicAuthFactory(),
+    new DigestAuthFactory(),
     new FacebookAuthFactory(),
     new GithubAuthFactory(),
-    new GoogleAuthFactory(),
-    new BasicAuthFactory()
-], environment, userProvider, new UserService(new UserRepository(), new CryptoHashProvider(), new UserServiceSettings(environment.sessionTimeout)));
+    new GoogleAuthFactory()
+], environment, userProvider, new UserService(new UserRepository(), new CryptoProvider(process.env.ENCRYPTION_KEY as string), new UserServiceSettings(environment.sessionTimeout)));
 authMiddleware.initialize(app);
 
 // Register the routes

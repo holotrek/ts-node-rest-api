@@ -2,20 +2,20 @@ import * as express from 'express';
 import * as passport from 'passport';
 import * as passportHttp from 'passport-http';
 
-import { BasicAuthUserModel } from '../domain/user-model';
+import { HttpAuthUserModel } from '../domain/user-model';
 import { UserProviderInterface } from '../providers/user.provider.interface';
 import { UserServiceInterface } from '../services/user.service.interface';
 import { AuthFactory, AuthMiddlewareInterface } from './auth.middleware.interface';
 import { HttpAuthMiddleware } from './http-auth.middleware';
 
-export class BasicAuthFactory implements AuthFactory {
+export class DigestAuthFactory implements AuthFactory {
     public create(environment: any, userProvider: UserProviderInterface, userService: UserServiceInterface): AuthMiddlewareInterface {
-        return new BasicAuthMiddleware(environment, userProvider, userService);
+        return new DigestAuthMiddleware(environment, userProvider, userService);
     }
 }
 
-class BasicAuthMiddleware extends HttpAuthMiddleware implements AuthMiddlewareInterface {
-    public readonly strategyId = 'basic';
+class DigestAuthMiddleware extends HttpAuthMiddleware implements AuthMiddlewareInterface {
+    public readonly strategyId = 'digest';
     public enabled = false;
 
     constructor(
@@ -28,33 +28,27 @@ class BasicAuthMiddleware extends HttpAuthMiddleware implements AuthMiddlewareIn
 
     public initialize(app: express.Express): void {
         let error = '';
-        if (!this.environment.useBasicAuth) {
-            error = 'Basic Auth is disabled.';
+        if (!this.environment.useDigestAuth) {
+            error = 'Digest Auth is disabled.';
         }
         else {
-            passport.use(new passportHttp.BasicStrategy((username, password, done) => {
-                this.userService.repository.getByAuth(this.strategyId, username).then((user: BasicAuthUserModel) => {
+            passport.use(new passportHttp.DigestStrategy({ qop: 'auth' }, (username, done) => {
+                this.userService.repository.getByAuth(this.strategyId, username).then((user: HttpAuthUserModel) => {
                     if (!user) {
                         return done(null, false);
                     }
                     else {
-                        if (this.userService.verifyPassword(password, user.passwordHash, user.passwordSalt)) {
-                            this.userService.login(user).then(sessionToken => {
-                                user.sessionToken = sessionToken;
-                                return done(null, user);
-                            }).catch(err => done(err));
-                        }
-                        else {
-                            return done(null, false);
-                        }
+                        this.userService.login(user).then(sessionToken => {
+                            user.sessionToken = sessionToken;
+                            return done(null, user, this.userService.decryptPassword(user));
+                        }).catch(err => done(err));
                     }
                 }).catch(err => done(err));
+            }, (params, done) => {
+                done(null, true);
             }));
 
-            app.get('/auth/basic', passport.authenticate('basic'), (req, res) => {
-                const user = req.user as BasicAuthUserModel;
-                user.passwordHash = '';
-                user.passwordSalt = '';
+            app.get('/auth/digest', passport.authenticate('digest'), (req, res) => {
                 res.json(req.user);
             });
 
@@ -63,7 +57,7 @@ class BasicAuthMiddleware extends HttpAuthMiddleware implements AuthMiddlewareIn
         }
 
         if (!this.enabled) {
-            app.get('/auth/basic', (req, res) => {
+            app.get('/auth/digest', (req, res) => {
                 throw new Error(error);
             });
         }
@@ -77,7 +71,7 @@ class BasicAuthMiddleware extends HttpAuthMiddleware implements AuthMiddlewareIn
         else {
             this.userService.repository.getUserBySession(sessionId).then(user => {
                 if (user) {
-                    const httpUser = user as BasicAuthUserModel;
+                    const httpUser = user as HttpAuthUserModel;
                     const session = httpUser.sessions.find(x => x.sessionToken === sessionId);
                     if (!session || session.expires < Date.now()) {
                         this.userService.repository.clearSession(sessionId)

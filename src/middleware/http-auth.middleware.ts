@@ -1,10 +1,9 @@
 import * as express from 'express';
 
-import { OAuthUserModel, HttpAuthUserModel } from '../domain/user-model';
+import { BasicAuthUserModel, DigestAuthUserModel, HttpAuthUserModel } from '../domain/user-model';
 import { UserProviderInterface } from '../providers/user.provider.interface';
-import { UserRepositoryInterface } from '../repositories/user.repository.interface';
-import { AuthMiddlewareInterface } from './auth.middleware.interface';
 import { UserServiceInterface } from '../services/user.service.interface';
+import { AuthMiddlewareInterface } from './auth.middleware.interface';
 
 export abstract class HttpAuthMiddleware implements AuthMiddlewareInterface {
     public readonly strategyId: string = '';
@@ -26,17 +25,16 @@ export abstract class HttpAuthMiddleware implements AuthMiddlewareInterface {
         if (!HttpAuthMiddleware._authRolesAdded) {
             app.post('/auth/register', (req, res, next) => {
                 this.userService.registerUser(req).then((user: HttpAuthUserModel) => {
-                    user.passwordHash = '';
-                    user.passwordSalt = '';
+                    this.userService.clearPassword(user);
                     return res.json(user);
-                }).catch(err => res.status(500).json({ error: err }));
+                }).catch(err => next(err));
             });
 
             app.get('/auth/logoff/:session', (req, res, next) => {
                 this.userService.repository.clearSession(req.params.session).then(() => {
                     this.userProvider.setCurrentUser(null);
                     return res.json({ message: 'User logged off.'});
-                }).catch(err => res.status(500).json({ error: err }));
+                }).catch(err => next(err));
             });
 
             HttpAuthMiddleware._authRolesAdded = true;

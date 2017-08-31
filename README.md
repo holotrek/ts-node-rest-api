@@ -29,7 +29,8 @@ However, it is written in TypeScript to provide better intellisense and easier e
   * basic
     * This strategy is not recommended for production use unless the site is secured through SSL/TLS. It is good for quickly setting up an auth form for testing, because it requires no password hashing on the client side and uses a single API call.
   * digest
-    * This strategy is more secure and can be used on HTTP to avoid sending plaintext passwords. It requires two API calls where the response of the first call provides a secret password to the client, which can be combined with the password provided and hashed to verify their identity.
+    * This strategy is more secure and can be used on HTTP to avoid sending plaintext passwords (although it is always recommended to use SSL/TLS anyway, if possible). It requires two API calls where the response of the first call provides a secret password to the client, which can be combined with the password provided and hashed to verify their identity.
+    * Digest auth requires an environment variable called "ENCRYPTION_KEY" that is set to a random string of characters, which should be as long as random as you can possibly manage it. This avoids having passwords stored in plaintext in the database. If possible, it would also increase security to have the DB server (where encrypted passwords reside) be separate from the Web server (where the encryption key resides).
 * It is recommended to turn on only one of these providers, as they share the same session tokens implementation.
 * The environment keys `useBasicAuth` and `useDigestAuth` (boolean) are used to enable/disable the respective strategy.
 

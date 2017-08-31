@@ -1,7 +1,7 @@
 import * as uuid4 from 'uuid/v4';
 
-import { HttpAuthUserModel, UserModel } from '../domain/user-model';
-import { HashProviderInterface } from '../providers/hash.provider.interface';
+import { HttpAuthUserModel, UserModel, BasicAuthUserModel, DigestAuthUserModel } from '../domain/user-model';
+import { CryptoProviderInterface } from '../providers/crypto.provider.interface';
 import { UserRepositoryInterface } from '../repositories/user.repository.interface';
 import { UserServiceInterface } from './user.service.interface';
 
@@ -14,7 +14,7 @@ export class UserServiceSettings {
 export class UserService implements UserServiceInterface {
     constructor(
         public repository: UserRepositoryInterface,
-        private hashProvider: HashProviderInterface,
+        private cryptoProvider: CryptoProviderInterface,
         private settings: UserServiceSettings
     ) {
     }
@@ -40,17 +40,26 @@ export class UserService implements UserServiceInterface {
                 }
 
                 const strategyId = request.body.strategyId;
-                if (!pass) {
+                if (!strategyId) {
                     return Promise.reject('Registration requres an authentication strategy.');
                 }
 
-                const hashes = this.hashProvider.hashPassword(pass);
-                const user = new HttpAuthUserModel();
+                let user = new HttpAuthUserModel();
+                switch (strategyId) {
+                    case 'basic':
+                        user = new BasicAuthUserModel();
+                        break;
+                    case 'digest':
+                        user = new DigestAuthUserModel();
+                        break;
+                    default:
+                        break;
+                }
+
+                this.setPassword(user, pass);
                 user.authId = authId;
                 user.name = request.body.displayName || authId;
-                user.passwordSalt = hashes[0];
-                user.passwordHash = hashes[1];
-                user.strategyId = request.body.strategyId;
+                user.strategyId = strategyId;
                 user.created = Date.now();
                 user.createdBy = user.name;
                 return this.repository.createUser(user);
@@ -59,7 +68,7 @@ export class UserService implements UserServiceInterface {
     }
 
     public verifyPassword(password: string, passwordHash: string, salt: string, algorithm?: string): boolean {
-        return this.hashProvider.verifyPassword(password, passwordHash, salt, algorithm);
+        return this.cryptoProvider.verifyPassword(password, passwordHash, salt, algorithm);
     }
 
     public login(user: HttpAuthUserModel): Promise<string> {
@@ -69,5 +78,30 @@ export class UserService implements UserServiceInterface {
             expires: Date.now() + this.settings.sessionTimeout
         });
         return this.repository.updateUser(user._id, user).then(() => sess);
+    }
+
+    public setPassword(user: HttpAuthUserModel, password: string): void {
+        if (user instanceof BasicAuthUserModel) {
+            const hashes = this.cryptoProvider.hashPassword(password);
+            (user as BasicAuthUserModel).passwordSalt = hashes[0];
+            (user as BasicAuthUserModel).passwordHash = hashes[1];
+        }
+        else if (user instanceof DigestAuthUserModel) {
+            (user as DigestAuthUserModel).encryptedPassword = this.cryptoProvider.encrypt(password);
+        }
+    }
+
+    public clearPassword(user: HttpAuthUserModel): void {
+        if (user instanceof BasicAuthUserModel) {
+            (user as BasicAuthUserModel).passwordSalt = '';
+            (user as BasicAuthUserModel).passwordHash = '';
+        }
+        else if (user instanceof DigestAuthUserModel) {
+            (user as DigestAuthUserModel).encryptedPassword = '';
+        }
+    }
+
+    public decryptPassword(user: HttpAuthUserModel): string {
+        return this.cryptoProvider.decrypt((user as DigestAuthUserModel).encryptedPassword);
     }
 }

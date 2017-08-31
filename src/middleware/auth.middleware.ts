@@ -37,7 +37,7 @@ export class AuthMiddleware implements AuthMiddlewareInterface {
             if (id) {
                 this.userService.repository.getUser(id).then(user => {
                     done(null, user);
-                });
+                }).catch(err => done(err));
             }
             else {
                 done(`invalid auth id: ${id}`);
