@@ -1,9 +1,13 @@
+import { inject, injectable } from 'inversify';
+
+import { TYPES } from '../ioc/types';
 import { TaskRepositoryInterface } from '../repositories/task-repository.interface';
 import { TaskServiceInterface } from './task.service.interface';
 
+@injectable()
 export class TaskService implements TaskServiceInterface {
     constructor(
-        private repository: TaskRepositoryInterface
+        @inject(TYPES.TaskRepository) private repository: TaskRepositoryInterface
     ) {
     }
 

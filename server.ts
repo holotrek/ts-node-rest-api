@@ -1,7 +1,10 @@
+import 'reflect-metadata';
+
 import * as bodyParser from 'body-parser';
 import * as express from 'express';
 import * as mongoose from 'mongoose';
 
+import { IoC } from './src/ioc/ioc';
 import { TodoListModels } from './src/api/models/todo-list-models';
 import { TodoListRoutes } from './src/api/routes/todo-list-routes';
 
@@ -21,8 +24,11 @@ mongoose.connect('mongodb://localhost/Tododb', {
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
+// Setup the IoC
+const container = IoC.container;
+
 // Register the routes
-TodoListRoutes.configureRoutes(app);
+TodoListRoutes.configureRoutes(app, container);
 
 // Add middleware to better catch and handle errors
 app.use(function(req, res) {

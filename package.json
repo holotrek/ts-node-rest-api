@@ -24,6 +24,7 @@
     "@types/jasmine": "^2.5.54",
     "@types/mongoose": "^4.7.21",
     "@types/node": "^8.0.25",
+    "@types/reflect-metadata": "0.0.5",
     "jasmine-core": "^2.8.0",
     "jasmine-spec-reporter": "^4.2.1",
     "karma": "^1.7.0",
@@ -39,6 +40,8 @@
   "dependencies": {
     "body-parser": "^1.17.2",
     "express": "^4.15.4",
-    "mongoose": "^4.11.8"
+    "inversify": "^4.3.0",
+    "mongoose": "^4.11.8",
+    "reflect-metadata": "^0.1.10"
   }
 }
