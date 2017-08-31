@@ -8,11 +8,14 @@ import { TodoListRoutes } from './src/api/routes/todo-list-routes';
 import { UserRepository } from './src/data/user.repository';
 import * as ENV from './src/functions/env-funcs';
 import { AuthMiddleware } from './src/middleware/auth.middleware';
+import { BasicAuthFactory } from './src/middleware/basic-auth.middleware';
 import { ErrorMiddleware } from './src/middleware/error.middleware';
+import { FacebookAuthFactory } from './src/middleware/facebook-auth.middleware';
 import { GithubAuthFactory } from './src/middleware/github-auth.middleware';
 import { GoogleAuthFactory } from './src/middleware/google-auth.middleware';
-import { FacebookAuthFactory } from './src/middleware/facebook-auth.middleware';
+import { CryptoHashProvider } from './src/providers/hash.provider';
 import { UserProvider } from './src/providers/user.provider';
+import { UserService, UserServiceSettings } from './src/services/user.service';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -48,8 +51,9 @@ const userProvider = new UserProvider();
 const authMiddleware = new AuthMiddleware([
     new FacebookAuthFactory(),
     new GithubAuthFactory(),
-    new GoogleAuthFactory()
-], environment, userProvider, new UserRepository());
+    new GoogleAuthFactory(),
+    new BasicAuthFactory()
+], environment, userProvider, new UserService(new UserRepository(), new CryptoHashProvider(), new UserServiceSettings(environment.sessionTimeout)));
 authMiddleware.initialize(app);
 
 // Register the routes

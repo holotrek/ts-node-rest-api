@@ -4,12 +4,27 @@ export class UserModel extends MongoModel {
     name: string;
     authId: string;
     strategyId: string;
-    accessToken: string;
-    refreshToken: string;
     created: number;
     updated: number;
     createdBy: string;
     updatedBy: string;
+}
+
+export class OAuthUserModel extends UserModel {
+    accessToken: string;
+    refreshToken: string;
+}
+
+export class HttpAuthUserModel extends UserModel {
+    passwordHash: string;
+    passwordSalt: string;
+    sessionToken: string;
+    sessions: [
+        {
+            sessionToken: string;
+            expires: number;
+        }
+    ];
 }
 
 export const UserSchema = {
@@ -23,16 +38,32 @@ export const UserSchema = {
     },
     strategyId: {
         type: String,
-        enum: ['facebook', 'github', 'google'],
+        enum: ['basic', 'digest', 'facebook', 'github', 'google'],
         required: 'Auth Strategy is required.'
     },
-    tokens: [
+    accessToken: {
+        type: String
+    },
+    refreshToken: {
+        type: String
+    },
+    passwordHash: {
+        type: String
+    },
+    passwordSalt: {
+        type: String
+    },
+    sessionToken: {
+        type: String
+    },
+    sessions: [
         {
-            accessToken: {
+            sessionToken: {
                 type: String
             },
-            refreshToken: {
-                type: String
+            expires: {
+                type: Number,
+                default: Date.now() + (24 * 60 * 60 * 1000)
             }
         }
     ],

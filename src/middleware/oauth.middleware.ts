@@ -1,9 +1,10 @@
 import * as express from 'express';
 
-import { UserModel } from '../domain/user-model';
+import { OAuthUserModel } from '../domain/user-model';
 import { UserProviderInterface } from '../providers/user.provider.interface';
 import { UserRepositoryInterface } from '../repositories/user.repository.interface';
 import { AuthMiddlewareInterface } from './auth.middleware.interface';
+import { UserServiceInterface } from '../services/user.service.interface';
 
 export abstract class OAuthMiddleware implements AuthMiddlewareInterface {
     public readonly strategyId: string = '';
@@ -12,7 +13,7 @@ export abstract class OAuthMiddleware implements AuthMiddlewareInterface {
     constructor(
         protected environment: any,
         protected userProvider: UserProviderInterface,
-        protected userRepo: UserRepositoryInterface
+        protected userService: UserServiceInterface
     ) {
     }
 
@@ -21,7 +22,7 @@ export abstract class OAuthMiddleware implements AuthMiddlewareInterface {
     abstract isAuthenticated: express.Handler;
 
     protected verify = (accessToken: string, refreshToken: string, profile: any, done: (error: any, user?: any, info?: any) => void) => {
-        const user = new UserModel();
+        const user = new OAuthUserModel();
         user.strategyId = this.strategyId;
         user.authId = profile.id;
         user.name = profile.displayName;
@@ -29,7 +30,7 @@ export abstract class OAuthMiddleware implements AuthMiddlewareInterface {
         user.refreshToken = refreshToken;
         user.created = Date.now();
         user.createdBy = user.name;
-        this.userRepo.getByAuthOrCreateUser(user).then(created => {
+        this.userService.repository.getByAuthOrCreateUser(user).then(created => {
             done(null, created);
         });
     }

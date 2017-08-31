@@ -23,6 +23,16 @@ However, it is written in TypeScript to provide better intellisense and easier e
 * For settings you want to use in every environment, add them to [environments/env.ts](environments/env.ts).
 * For environment-specific settings, the server will read from the particular env.{environment}.ts file for that environment, which is determined through the use of the user/system enviornment variable `NODE_ENVIRONMENT`. For example, if `NODE_ENVIRONMENT="Development"`, the settings from env.development.ts will override and/or be merged with settings from env.js
 
+## HTTP Auth
+
+* There are two strategies available for authorization without using a third party provider:
+  * basic
+    * This strategy is not recommended for production use unless the site is secured through SSL/TLS. It is good for quickly setting up an auth form for testing, because it requires no password hashing on the client side and uses a single API call.
+  * digest
+    * This strategy is more secure and can be used on HTTP to avoid sending plaintext passwords. It requires two API calls where the response of the first call provides a secret password to the client, which can be combined with the password provided and hashed to verify their identity.
+* It is recommended to turn on only one of these providers, as they share the same session tokens implementation.
+* The environment keys `useBasicAuth` and `useDigestAuth` (boolean) are used to enable/disable the respective strategy.
+
 ## oAuth
 
 * oAuth strategies available:
@@ -62,22 +72,43 @@ However, it is written in TypeScript to provide better intellisense and easier e
 
 # API
 
+**NOTE**: API routes marked as "Authenticated" will require the following headers to be sent to avoid a 401 error (variables noted by angle brackets are found in the query string sent back from below Auth methods to the client callback url base_url/auth/success?querystring):
+* `strategy: <strategy>`
+* if strategy is an oauth strategy:
+  * `access_token: <access_token>`
+  * `refresh_token: <refresh_token>`
+* if strategy is 'basic' or 'digest':
+  * `Authorization: Bearer <session_token>`
+
 ## Tasks
 * GET /tasks
   * List all available tasks
-* POST /tasks
-  * Create a task
 * GET /tasks/:taskId
   * Gets the single task identified by {taskId}
+* POST /tasks
+  * Authenticated
+  * Create a task
 * PUT /tasks/:taskId
+  * Authenticated
   * Updates the task identified by {taskId}
 * DELETE /tasks/:taskId
+  * Authenticated
   * Deletes the task identified by {taskId}
 
 ## Auth
-* The following URLs are intended to be accessed via the web browser rather than an XHR request:
+* GET /auth/strategies
+  * Gets a list of strategies that have been enabled for the app.
+* POST /auth/register
+  * Adds a new user intended for basic or digest authentication
+* GET /auth/basic
+  * Logs in via basic authentication and receives a session token to use in "Authenticated" API requests
+  * Requires header: `Authorization: Basic <bas64 user+pass>`
+* GET /auth/logoff/:session
+  * Logs off from the provided {session}
+
+# Web Endpoings
+* The following URLs are intended to be accessed via the web browser rather than an XHR request due to requiring a session:
+  * /auth/digest
   * /auth/github
   * /auth/google
   * /auth/facebook
-* GET /auth/strategies
-  * Gets a list of strategies that have been enabled for the app.

@@ -2,14 +2,15 @@ import * as express from 'express';
 import * as passport from 'passport';
 import * as googleStrategy from 'passport-google-oauth2';
 
-import { UserModel } from '../domain/user-model';
+import { OAuthUserModel } from '../domain/user-model';
 import { UserProviderInterface } from '../providers/user.provider.interface';
 import { UserRepositoryInterface } from '../repositories/user.repository.interface';
 import { AuthFactory, AuthMiddlewareInterface } from './auth.middleware.interface';
 import { OAuthMiddleware } from './oauth.middleware';
+import { UserServiceInterface } from '../services/user.service.interface';
 
 export class GoogleAuthFactory implements AuthFactory {
-    public create(environment: any, userProvider: UserProviderInterface, userService: UserRepositoryInterface): AuthMiddlewareInterface {
+    public create(environment: any, userProvider: UserProviderInterface, userService: UserServiceInterface): AuthMiddlewareInterface {
         return new GoogleAuthMiddleware(environment, userProvider, userService);
     }
 }
@@ -21,9 +22,9 @@ class GoogleAuthMiddleware extends OAuthMiddleware implements AuthMiddlewareInte
     constructor(
         environment: any,
         userProvider: UserProviderInterface,
-        userRepo: UserRepositoryInterface
+        userService: UserServiceInterface
     ) {
-        super(environment, userProvider, userRepo);
+        super(environment, userProvider, userService);
     }
 
     public initialize(app: express.Express): void {
@@ -51,11 +52,8 @@ class GoogleAuthMiddleware extends OAuthMiddleware implements AuthMiddlewareInte
             app.get('/auth/google/callback', passport.authenticate('google', {
                 failureRedirect: `${this.environment.clientAuthUrl}/auth/failure`,
             }), (req, res) => {
-                res.cookie('auth_strategy', this.strategyId);
-                res.cookie('auth_id', req.user.authId);
-                res.cookie('auth_accessToken', req.user.accessToken);
-                res.cookie('auth_refreshToken', req.user.refreshToken);
-                res.redirect(`${this.environment.clientAuthUrl}/auth/success`);
+                const user = req.user as OAuthUserModel;
+                res.redirect(`${this.environment.clientAuthUrl}/auth/success?strategy=${this.strategyId}&access_token=${user.accessToken}&refresh_token=${user.refreshToken || ''}`);
             });
 
             const GoogleTokenStrategy = require('passport-google-token').Strategy;
@@ -74,5 +72,5 @@ class GoogleAuthMiddleware extends OAuthMiddleware implements AuthMiddlewareInte
         }
     }
 
-    public isAuthenticated = passport.authenticate('google-token');
+    public isAuthenticated = passport.authenticate('google-token', { session: false });
 }

@@ -2,13 +2,15 @@ import * as express from 'express';
 import * as passport from 'passport';
 import * as facebookStrategy from 'passport-facebook';
 
+import { OAuthUserModel } from '../domain/user-model';
 import { UserProviderInterface } from '../providers/user.provider.interface';
 import { UserRepositoryInterface } from '../repositories/user.repository.interface';
+import { UserServiceInterface } from '../services/user.service.interface';
 import { AuthFactory, AuthMiddlewareInterface } from './auth.middleware.interface';
 import { OAuthMiddleware } from './oauth.middleware';
 
 export class FacebookAuthFactory implements AuthFactory {
-    public create(environment: any, userProvider: UserProviderInterface, userService: UserRepositoryInterface): AuthMiddlewareInterface {
+    public create(environment: any, userProvider: UserProviderInterface, userService: UserServiceInterface): AuthMiddlewareInterface {
         return new FacebookAuthMiddleware(environment, userProvider, userService);
     }
 }
@@ -20,9 +22,9 @@ class FacebookAuthMiddleware extends OAuthMiddleware implements AuthMiddlewareIn
     constructor(
         environment: any,
         userProvider: UserProviderInterface,
-        userRepo: UserRepositoryInterface
+        userService: UserServiceInterface
     ) {
-        super(environment, userProvider, userRepo);
+        super(environment, userProvider, userService);
     }
 
     public initialize(app: express.Express): void {
@@ -45,11 +47,8 @@ class FacebookAuthMiddleware extends OAuthMiddleware implements AuthMiddlewareIn
             app.get('/auth/facebook/callback', passport.authenticate('facebook', {
                 failureRedirect: `${this.environment.clientAuthUrl}/auth/failure`,
             }), (req, res) => {
-                res.cookie('auth_strategy', this.strategyId);
-                res.cookie('auth_id', req.user.authId);
-                res.cookie('auth_accessToken', req.user.accessToken);
-                res.cookie('auth_refreshToken', req.user.refreshToken);
-                res.redirect(`${this.environment.clientAuthUrl}/auth/success`);
+                const user = req.user as OAuthUserModel;
+                res.redirect(`${this.environment.clientAuthUrl}/auth/success?strategy=${this.strategyId}&access_token=${user.accessToken}&refresh_token=${user.refreshToken || ''}`);
             });
 
             const FacebookTokenStrategy = require('passport-facebook-token');
@@ -68,5 +67,5 @@ class FacebookAuthMiddleware extends OAuthMiddleware implements AuthMiddlewareIn
         }
     }
 
-    public isAuthenticated = passport.authenticate('facebook-token');
+    public isAuthenticated = passport.authenticate('facebook-token', { session: false });
 }

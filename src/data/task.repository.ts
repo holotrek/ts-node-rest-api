@@ -10,7 +10,7 @@ export class TaskRepository implements TaskRepositoryInterface {
         TaskRepository.Task = mongoose.model('Tasks');
     }
 
-    getTasks(conditions: Object): Promise<TaskModel[]> {
+    public getTasks(conditions: Object): Promise<TaskModel[]> {
         return new Promise<TaskModel[]>((resolve: any, reject: any) => {
             TaskRepository.Task.find(conditions, (err: any, task: any) => {
                 if (err) {
@@ -23,7 +23,7 @@ export class TaskRepository implements TaskRepositoryInterface {
         });
     }
 
-    getTask(id: string): Promise<TaskModel> {
+    public getTask(id: string): Promise<TaskModel> {
         return new Promise<TaskModel>((resolve: any, reject: any) => {
             TaskRepository.Task.findById(id, (err: any, task: any) => {
                 if (err) {
@@ -36,7 +36,7 @@ export class TaskRepository implements TaskRepositoryInterface {
         });
     }
 
-    createTask(task: TaskModel): Promise<TaskModel> {
+    public createTask(task: TaskModel): Promise<TaskModel> {
         return new Promise<any>((resolve: any, reject: any) => {
             const newTask = new TaskRepository.Task(task);
             newTask.save((err: any, taskOut: any) => {
@@ -50,7 +50,7 @@ export class TaskRepository implements TaskRepositoryInterface {
         });
     }
 
-    updateTask(id: string, task: TaskModel): Promise<TaskModel> {
+    public updateTask(id: string, task: TaskModel): Promise<TaskModel> {
         return new Promise<TaskModel>((resolve: any, reject: any) => {
             TaskRepository.Task.findOneAndUpdate({ _id: id }, task, { new: true }, (err: any, taskOut: any) => {
                 if (err) {
@@ -63,7 +63,7 @@ export class TaskRepository implements TaskRepositoryInterface {
         });
     }
 
-    deleteTask(id: string): Promise<any> {
+    public deleteTask(id: string): Promise<any> {
         return new Promise<any>((resolve: any, reject: any) => {
             TaskRepository.Task.remove({ _id: id }, err => {
                 if (err) {

@@ -3,7 +3,7 @@ import * as passport from 'passport';
 
 import { UserModel } from '../domain/user-model';
 import { UserProviderInterface } from '../providers/user.provider.interface';
-import { UserRepositoryInterface } from '../repositories/user.repository.interface';
+import { UserServiceInterface } from '../services/user.service.interface';
 import { AuthFactory, AuthMiddlewareInterface } from './auth.middleware.interface';
 
 export class AuthMiddleware implements AuthMiddlewareInterface {
@@ -15,11 +15,11 @@ export class AuthMiddleware implements AuthMiddlewareInterface {
         private middlewareUsed: AuthFactory[],
         private environment: any,
         private userProvider: UserProviderInterface,
-        private userRepo: UserRepositoryInterface
+        private userService: UserServiceInterface
     ) {
         this._middleware = [];
         for (const c of middlewareUsed) {
-            const m = c.create(environment, userProvider, userRepo);
+            const m = c.create(environment, userProvider, userService);
             this._middleware.push(m);
         }
     }
@@ -35,7 +35,7 @@ export class AuthMiddleware implements AuthMiddlewareInterface {
 
         passport.deserializeUser((id: string, done) => {
             if (id) {
-                this.userRepo.getUser(id).then(user => {
+                this.userService.repository.getUser(id).then(user => {
                     done(null, user);
                 });
             }

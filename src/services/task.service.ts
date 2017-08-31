@@ -5,8 +5,8 @@ import { TaskServiceInterface } from './task.service.interface';
 
 export class TaskService implements TaskServiceInterface {
     constructor(
-        private repository: TaskRepositoryInterface,
-        private userProvider: UserProviderInterface
+        public repository: TaskRepositoryInterface,
+        public userProvider: UserProviderInterface
     ) {
     }
 
