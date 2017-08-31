@@ -1,12 +1,15 @@
 import { TaskModel } from '../domain/task-model';
 import { UserProviderInterface } from '../providers/user.provider.interface';
 import { TaskRepositoryInterface } from '../repositories/task.repository.interface';
+import { inject, injectable } from 'inversify';
+import { TYPES } from '../ioc/types';
 import { TaskServiceInterface } from './task.service.interface';
 
+@injectable()
 export class TaskService implements TaskServiceInterface {
     constructor(
-        public repository: TaskRepositoryInterface,
-        public userProvider: UserProviderInterface
+        @inject(TYPES.TaskRepository) public repository: TaskRepositoryInterface,
+        @inject(TYPES.UserProvider) public userProvider: UserProviderInterface
     ) {
     }
 

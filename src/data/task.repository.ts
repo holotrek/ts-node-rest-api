@@ -1,8 +1,10 @@
+import { injectable } from 'inversify';
 import * as mongoose from 'mongoose';
 
 import { TaskModel } from '../domain/task-model';
 import { TaskRepositoryInterface } from '../repositories/task.repository.interface';
 
+@injectable()
 export class TaskRepository implements TaskRepositoryInterface {
     private static Task: mongoose.Model<any>;
 

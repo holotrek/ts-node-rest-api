@@ -1,8 +1,10 @@
+import { injectable } from 'inversify';
 import * as mongoose from 'mongoose';
 
-import { UserModel, HttpAuthUserModel } from '../domain/user-model';
+import { HttpAuthUserModel, UserModel } from '../domain/user-model';
 import { UserRepositoryInterface } from '../repositories/user.repository.interface';
 
+@injectable()
 export class UserRepository implements UserRepositoryInterface {
     private static User: mongoose.Model<any>;
 

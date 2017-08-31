@@ -1,16 +1,13 @@
 import * as express from 'express';
+import { Container } from 'inversify';
 
-import { TaskRepository } from '../../data/task.repository';
-import { AuthMiddlewareInterface } from '../../middleware/auth.middleware.interface';
-import { UserProviderInterface } from '../../providers/user.provider.interface';
-import { TaskService } from '../../services/task.service';
+import { AuthMiddleware } from '../../middleware/auth.middleware';
 import { TodoListController } from '../controllers/todo-list-controller';
 
 export class TodoListRoutes {
-    public static configureRoutes(app: express.Express, userProvider: UserProviderInterface, authMiddleware: AuthMiddlewareInterface): void {
+    public static configureRoutes(app: express.Express, container: Container, authMiddleware: AuthMiddleware): void {
 
-        // TODO: Remove need to manually configure dependencies (using an IoC option: electrolyte / InversifyJS?)
-        const controller = new TodoListController(new TaskService(new TaskRepository(), userProvider));
+        const controller = container.get(TodoListController);
 
         app.route('/tasks')
             .get((req, res) => controller.listAllTasks(res))

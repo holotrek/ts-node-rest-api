@@ -1,20 +1,24 @@
+import { inject, injectable } from 'inversify';
 import * as uuid4 from 'uuid/v4';
 
-import { HttpAuthUserModel, UserModel, BasicAuthUserModel, DigestAuthUserModel } from '../domain/user-model';
+import { BasicAuthUserModel, DigestAuthUserModel, HttpAuthUserModel, UserModel } from '../domain/user-model';
+import { TYPES } from '../ioc/types';
 import { CryptoProviderInterface } from '../providers/crypto.provider.interface';
 import { UserRepositoryInterface } from '../repositories/user.repository.interface';
 import { UserServiceInterface } from './user.service.interface';
 
+@injectable()
 export class UserServiceSettings {
     constructor(
-        public sessionTimeout: number
+        @inject(TYPES.sessionTimeout) public sessionTimeout: number
     ) { }
 }
 
+@injectable()
 export class UserService implements UserServiceInterface {
     constructor(
-        public repository: UserRepositoryInterface,
-        private cryptoProvider: CryptoProviderInterface,
+        @inject(TYPES.UserRepository) public repository: UserRepositoryInterface,
+        @inject(TYPES.CryptoProvider) private cryptoProvider: CryptoProviderInterface,
         private settings: UserServiceSettings
     ) {
     }

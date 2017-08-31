@@ -29,6 +29,7 @@
         "@types/passport-github2": "^1.1.1",
         "@types/passport-google-oauth2": "^0.1.1",
         "@types/passport-http": "^0.3.2",
+        "@types/reflect-metadata": "0.0.5",
         "@types/uuid": "^3.4.1",
         "jasmine-core": "^2.8.0",
         "jasmine-spec-reporter": "^4.2.1",

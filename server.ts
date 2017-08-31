@@ -1,3 +1,5 @@
+import 'reflect-metadata';
+
 import * as bodyParser from 'body-parser';
 import * as express from 'express';
 import * as mongoose from 'mongoose';
@@ -5,8 +7,9 @@ import * as passport from 'passport';
 
 import { TodoListModels } from './src/api/models/todo-list-models';
 import { TodoListRoutes } from './src/api/routes/todo-list-routes';
-import { UserRepository } from './src/data/user.repository';
 import * as ENV from './src/functions/env-funcs';
+import { IoC } from './src/ioc/ioc';
+import { TYPES } from './src/ioc/types';
 import { AuthMiddleware } from './src/middleware/auth.middleware';
 import { BasicAuthFactory } from './src/middleware/basic-auth.middleware';
 import { DigestAuthFactory } from './src/middleware/digest-auth.middleware';
@@ -14,9 +17,9 @@ import { ErrorMiddleware } from './src/middleware/error.middleware';
 import { FacebookAuthFactory } from './src/middleware/facebook-auth.middleware';
 import { GithubAuthFactory } from './src/middleware/github-auth.middleware';
 import { GoogleAuthFactory } from './src/middleware/google-auth.middleware';
-import { CryptoProvider } from './src/providers/crypto.provider';
-import { UserProvider } from './src/providers/user.provider';
-import { UserService, UserServiceSettings } from './src/services/user.service';
+import { UserProviderInterface } from './src/providers/user.provider.interface';
+import { UserServiceSettings } from './src/services/user.service';
+import { UserServiceInterface } from './src/services/user.service.interface';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -47,19 +50,29 @@ app.use(bodyParser.json());
 app.use(passport.initialize());
 app.use(passport.session());
 
+// Setup the IoC
+const constants: { [key: string]: any } = {};
+constants[TYPES.encryptionKey.toString()] = process.env.ENCRYPTION_KEY as string;
+constants[TYPES.sessionTimeout.toString()] = environment.sessionTimeout;
+const container = IoC.configureContainer(constants);
+
 // Setup Authentication
-const userProvider = new UserProvider();
-const authMiddleware = new AuthMiddleware([
-    new BasicAuthFactory(),
-    new DigestAuthFactory(),
-    new FacebookAuthFactory(),
-    new GithubAuthFactory(),
-    new GoogleAuthFactory()
-], environment, userProvider, new UserService(new UserRepository(), new CryptoProvider(process.env.ENCRYPTION_KEY as string), new UserServiceSettings(environment.sessionTimeout)));
+const authMiddleware = new AuthMiddleware(
+    [
+        new BasicAuthFactory(),
+        new DigestAuthFactory(),
+        new FacebookAuthFactory(),
+        new GithubAuthFactory(),
+        new GoogleAuthFactory()
+    ],
+    environment,
+    container.get<UserProviderInterface>(TYPES.UserProvider),
+    container.get<UserServiceInterface>(TYPES.UserService)
+);
 authMiddleware.initialize(app);
 
 // Register the routes
-TodoListRoutes.configureRoutes(app, userProvider, authMiddleware);
+TodoListRoutes.configureRoutes(app, container, authMiddleware);
 app.get('/auth/strategies', (req, res) => {
     res.json(authMiddleware.getEnabledAuthStrategies());
 });

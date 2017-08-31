@@ -1,6 +1,9 @@
+import { injectable } from 'inversify';
+
 import { UserModel } from '../domain/user-model';
 import { UserProviderInterface } from './user.provider.interface';
 
+@injectable()
 export class UserProvider implements UserProviderInterface {
     private _user: UserModel;
 
