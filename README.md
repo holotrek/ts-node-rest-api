@@ -107,7 +107,7 @@ However, it is written in TypeScript to provide better intellisense and easier e
 * GET /auth/logoff/:session
   * Logs off from the provided {session}
 
-# Web Endpoings
+# Web Endpoints
 * The following URLs are intended to be accessed via the web browser rather than an XHR request due to requiring a session:
   * /auth/digest
   * /auth/github
