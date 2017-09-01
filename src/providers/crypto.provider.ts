@@ -7,7 +7,7 @@ import { CryptoProviderInterface } from './crypto.provider.interface';
 @injectable()
 export class CryptoProvider implements CryptoProviderInterface {
     constructor(
-        @inject(TYPES.encryptionKey) private encryptionKey: string
+        @inject(TYPES.encryptionKey) public encryptionKey: string
     ) { }
 
     public hashPassword(password: string, algorithm: string = 'sha512'): [string, string] {

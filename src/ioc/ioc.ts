@@ -21,8 +21,8 @@ export module IoC {
 
     export function configureContainer(constants: { [key: string]: any }): Container {
         // Constants
-        container.bind<string>(TYPES.encryptionKey).to(constants[TYPES.encryptionKey.toString()]);
-        container.bind<number>(TYPES.sessionTimeout).to(constants[TYPES.sessionTimeout.toString()]);
+        container.bind<string>(TYPES.encryptionKey).toConstantValue(constants.encryptionKey);
+        container.bind<number>(TYPES.sessionTimeout).toConstantValue(constants.sessionTimeout);
 
         // Providers
         container.bind<CryptoProviderInterface>(TYPES.CryptoProvider).to(CryptoProvider);

@@ -52,8 +52,8 @@ app.use(passport.session());
 
 // Setup the IoC
 const constants: { [key: string]: any } = {};
-constants[TYPES.encryptionKey.toString()] = process.env.ENCRYPTION_KEY as string;
-constants[TYPES.sessionTimeout.toString()] = environment.sessionTimeout;
+constants.encryptionKey = process.env.ENCRYPTION_KEY as string;
+constants.sessionTimeout = environment.sessionTimeout;
 const container = IoC.configureContainer(constants);
 
 // Setup Authentication
