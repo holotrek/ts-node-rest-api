@@ -1,7 +1,11 @@
+import { TaskModel } from '../domain/task-model';
+import { TaskRepositoryInterface } from '../repositories/task.repository.interface';
+
 export interface TaskServiceInterface {
-    listAllTasks(): Promise<any>;
-    getTask(request: any): Promise<any>;
-    createTask(request: any): Promise<any>;
-    updateTask(request: any): Promise<any>;
+    repository: TaskRepositoryInterface;
+    listAllTasks(): Promise<TaskModel[]>;
+    getTask(request: any): Promise<TaskModel>;
+    createTask(request: any): Promise<TaskModel>;
+    updateTask(request: any): Promise<TaskModel>;
     deleteTask(request: any): Promise<any>;
 }

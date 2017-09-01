@@ -1,15 +1,19 @@
 import { TaskModel } from '../src/domain/task-model';
-import { TaskRepositoryInterface } from '../src/repositories/task-repository.interface';
+import { TaskRepositoryInterface } from '../src/repositories/task.repository.interface';
 import { TaskService } from '../src/services/task.service';
+import { UserProviderInterface } from '../src/providers/user.provider.interface';
 
 describe('Task Service', () => {
     let taskService: TaskService;
+    const userProviderSpy = jasmine.createSpyObj<UserProviderInterface>('UserProviderInterface', [
+        'userName', 'isAuthenticated', 'setCurrentUser'
+    ]);
     const taskRepoSpy = jasmine.createSpyObj<TaskRepositoryInterface>('TaskRepositoryInterface', [
         'getTasks', 'getTask', 'createTask', 'updateTask', 'deleteTask'
     ]);
 
     beforeEach(() => {
-        taskService = new TaskService(taskRepoSpy);
+        taskService = new TaskService(taskRepoSpy, userProviderSpy);
     });
 
     it('Gets tasks', done => {
