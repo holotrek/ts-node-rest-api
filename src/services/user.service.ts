@@ -2,7 +2,7 @@ import { inject, injectable } from 'inversify';
 import * as uuid4 from 'uuid/v4';
 
 import { BasicAuthUserModel, DigestAuthUserModel, HttpAuthUserModel, UserModel } from '../domain/user-model';
-import { TYPES } from '../ioc/types';
+import { TYPES } from '../api/ioc.types';
 import { CryptoProviderInterface } from '../providers/crypto.provider.interface';
 import { UserRepositoryInterface } from '../repositories/user.repository.interface';
 import { UserServiceInterface } from './user.service.interface';

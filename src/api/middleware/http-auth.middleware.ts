@@ -1,8 +1,8 @@
 import * as express from 'express';
 
-import { BasicAuthUserModel, DigestAuthUserModel, HttpAuthUserModel } from '../domain/user-model';
-import { UserProviderInterface } from '../providers/user.provider.interface';
-import { UserServiceInterface } from '../services/user.service.interface';
+import { BasicAuthUserModel, DigestAuthUserModel, HttpAuthUserModel } from '../../domain/user-model';
+import { UserProviderInterface } from '../../providers/user.provider.interface';
+import { UserServiceInterface } from '../../services/user.service.interface';
 import { AuthMiddlewareInterface } from './auth.middleware.interface';
 
 export abstract class HttpAuthMiddleware implements AuthMiddlewareInterface {

@@ -1,10 +1,10 @@
 import * as express from 'express';
 
-import { OAuthUserModel } from '../domain/user-model';
-import { UserProviderInterface } from '../providers/user.provider.interface';
-import { UserRepositoryInterface } from '../repositories/user.repository.interface';
+import { OAuthUserModel } from '../../domain/user-model';
+import { UserProviderInterface } from '../../providers/user.provider.interface';
+import { UserRepositoryInterface } from '../../repositories/user.repository.interface';
 import { AuthMiddlewareInterface } from './auth.middleware.interface';
-import { UserServiceInterface } from '../services/user.service.interface';
+import { UserServiceInterface } from '../../services/user.service.interface';
 
 export abstract class OAuthMiddleware implements AuthMiddlewareInterface {
     public readonly strategyId: string = '';

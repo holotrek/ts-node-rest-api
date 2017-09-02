@@ -1,10 +1,10 @@
 import { inject, injectable } from 'inversify';
 
-import { TYPES } from '../../ioc/types';
+import { TYPES } from '../ioc.types';
 import { TaskServiceInterface } from '../../services/task.service.interface';
 
 @injectable()
-export class TodoListController {
+export class TaskController {
     constructor(
         @inject(TYPES.TaskService) private taskService: TaskServiceInterface
     ) {

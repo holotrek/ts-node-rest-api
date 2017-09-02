@@ -2,12 +2,12 @@ import * as express from 'express';
 import * as passport from 'passport';
 import * as githubStrategy from 'passport-github2';
 
-import { OAuthUserModel } from '../domain/user-model';
-import { UserProviderInterface } from '../providers/user.provider.interface';
-import { UserRepositoryInterface } from '../repositories/user.repository.interface';
+import { OAuthUserModel } from '../../domain/user-model';
+import { UserProviderInterface } from '../../providers/user.provider.interface';
+import { UserRepositoryInterface } from '../../repositories/user.repository.interface';
 import { AuthFactory, AuthMiddlewareInterface } from './auth.middleware.interface';
 import { OAuthMiddleware } from './oauth.middleware';
-import { UserServiceInterface } from '../services/user.service.interface';
+import { UserServiceInterface } from '../../services/user.service.interface';
 
 export class GithubAuthFactory implements AuthFactory {
     public create(environment: any, userProvider: UserProviderInterface, userService: UserServiceInterface): AuthMiddlewareInterface {

@@ -1,9 +1,9 @@
 import * as express from 'express';
 import * as passport from 'passport';
 
-import { UserModel } from '../domain/user-model';
-import { UserProviderInterface } from '../providers/user.provider.interface';
-import { UserServiceInterface } from '../services/user.service.interface';
+import { UserModel } from '../../domain/user-model';
+import { UserProviderInterface } from '../../providers/user.provider.interface';
+import { UserServiceInterface } from '../../services/user.service.interface';
 import { AuthFactory, AuthMiddlewareInterface } from './auth.middleware.interface';
 
 export class AuthMiddleware implements AuthMiddlewareInterface {

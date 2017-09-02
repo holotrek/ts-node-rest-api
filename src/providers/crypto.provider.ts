@@ -1,7 +1,7 @@
 import * as crypto from 'crypto';
 import { inject, injectable } from 'inversify';
 
-import { TYPES } from '../ioc/types';
+import { TYPES } from '../api/ioc.types';
 import { CryptoProviderInterface } from './crypto.provider.interface';
 
 @injectable()

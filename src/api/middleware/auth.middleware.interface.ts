@@ -1,7 +1,7 @@
 import * as express from 'express';
 
-import { UserProviderInterface } from '../providers/user.provider.interface';
-import { UserServiceInterface } from '../services/user.service.interface';
+import { UserProviderInterface } from '../../providers/user.provider.interface';
+import { UserServiceInterface } from '../../services/user.service.interface';
 
 export interface AuthMiddlewareInterface {
     strategyId: string;

@@ -1,6 +1,6 @@
 import { Container } from 'inversify';
 
-import { TodoListController } from '../api/controllers/todo-list-controller';
+import { TaskController } from '../api/controllers/task-controller';
 import { TaskRepository } from '../data/task.repository';
 import { UserRepository } from '../data/user.repository';
 import { CryptoProvider } from '../providers/crypto.provider';
@@ -13,7 +13,7 @@ import { TaskService } from '../services/task.service';
 import { TaskServiceInterface } from '../services/task.service.interface';
 import { UserService, UserServiceSettings } from '../services/user.service';
 import { UserServiceInterface } from '../services/user.service.interface';
-import { TYPES } from './types';
+import { TYPES } from './ioc.types';
 
 export module IoC {
     // Configure container
@@ -38,7 +38,7 @@ export module IoC {
         container.bind<UserServiceSettings>(UserServiceSettings).toSelf();
 
         // Controllers
-        container.bind<TodoListController>(TodoListController).toSelf();
+        container.bind<TaskController>(TaskController).toSelf();
 
         return container;
     }

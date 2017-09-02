@@ -2,9 +2,9 @@ import * as express from 'express';
 import * as passport from 'passport';
 import * as passportHttp from 'passport-http';
 
-import { HttpAuthUserModel } from '../domain/user-model';
-import { UserProviderInterface } from '../providers/user.provider.interface';
-import { UserServiceInterface } from '../services/user.service.interface';
+import { HttpAuthUserModel } from '../../domain/user-model';
+import { UserProviderInterface } from '../../providers/user.provider.interface';
+import { UserServiceInterface } from '../../services/user.service.interface';
 import { AuthFactory, AuthMiddlewareInterface } from './auth.middleware.interface';
 import { HttpAuthMiddleware } from './http-auth.middleware';
 

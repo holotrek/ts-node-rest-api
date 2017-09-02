@@ -2,7 +2,7 @@ import { TaskModel } from '../domain/task-model';
 import { UserProviderInterface } from '../providers/user.provider.interface';
 import { TaskRepositoryInterface } from '../repositories/task.repository.interface';
 import { inject, injectable } from 'inversify';
-import { TYPES } from '../ioc/types';
+import { TYPES } from '../api/ioc.types';
 import { TaskServiceInterface } from './task.service.interface';
 
 @injectable()

@@ -2,10 +2,10 @@ import * as express from 'express';
 import * as passport from 'passport';
 import * as facebookStrategy from 'passport-facebook';
 
-import { OAuthUserModel } from '../domain/user-model';
-import { UserProviderInterface } from '../providers/user.provider.interface';
-import { UserRepositoryInterface } from '../repositories/user.repository.interface';
-import { UserServiceInterface } from '../services/user.service.interface';
+import { OAuthUserModel } from '../../domain/user-model';
+import { UserProviderInterface } from '../../providers/user.provider.interface';
+import { UserRepositoryInterface } from '../../repositories/user.repository.interface';
+import { UserServiceInterface } from '../../services/user.service.interface';
 import { AuthFactory, AuthMiddlewareInterface } from './auth.middleware.interface';
 import { OAuthMiddleware } from './oauth.middleware';
 

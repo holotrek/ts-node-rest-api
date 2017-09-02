@@ -1,13 +1,13 @@
 import * as express from 'express';
 import { Container } from 'inversify';
 
-import { AuthMiddleware } from '../../middleware/auth.middleware';
-import { TodoListController } from '../controllers/todo-list-controller';
+import { AuthMiddleware } from './middleware/auth.middleware';
+import { TaskController } from './controllers/task-controller';
 
-export class TodoListRoutes {
+export class RouteBinder {
     public static configureRoutes(app: express.Express, container: Container, authMiddleware: AuthMiddleware): void {
 
-        const controller = container.get(TodoListController);
+        const controller = container.get(TaskController);
 
         app.route('/tasks')
             .get((req, res) => controller.listAllTasks(res))

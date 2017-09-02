@@ -5,20 +5,19 @@ import * as express from 'express';
 import * as mongoose from 'mongoose';
 import * as passport from 'passport';
 
-import { TodoListModels } from './src/api/models/todo-list-models';
-import { TodoListRoutes } from './src/api/routes/todo-list-routes';
+import { IoC } from './src/api/ioc';
+import { TYPES } from './src/api/ioc.types';
+import { AuthMiddleware } from './src/api/middleware/auth.middleware';
+import { BasicAuthFactory } from './src/api/middleware/basic-auth.middleware';
+import { DigestAuthFactory } from './src/api/middleware/digest-auth.middleware';
+import { ErrorMiddleware } from './src/api/middleware/error.middleware';
+import { FacebookAuthFactory } from './src/api/middleware/facebook-auth.middleware';
+import { GithubAuthFactory } from './src/api/middleware/github-auth.middleware';
+import { GoogleAuthFactory } from './src/api/middleware/google-auth.middleware';
+import { ModelBinder } from './src/api/model-binder';
+import { RouteBinder } from './src/api/route-binder';
 import * as ENV from './src/functions/env-funcs';
-import { IoC } from './src/ioc/ioc';
-import { TYPES } from './src/ioc/types';
-import { AuthMiddleware } from './src/middleware/auth.middleware';
-import { BasicAuthFactory } from './src/middleware/basic-auth.middleware';
-import { DigestAuthFactory } from './src/middleware/digest-auth.middleware';
-import { ErrorMiddleware } from './src/middleware/error.middleware';
-import { FacebookAuthFactory } from './src/middleware/facebook-auth.middleware';
-import { GithubAuthFactory } from './src/middleware/github-auth.middleware';
-import { GoogleAuthFactory } from './src/middleware/google-auth.middleware';
 import { UserProviderInterface } from './src/providers/user.provider.interface';
-import { UserServiceSettings } from './src/services/user.service';
 import { UserServiceInterface } from './src/services/user.service.interface';
 
 const app = express();
@@ -35,8 +34,7 @@ environment.googleSecret = environment.googleSecret || process.env.GOOGLE_CLIENT
 console.log(environment);
 
 // Create the model schemas
-mongoose.model('Tasks', TodoListModels.initTaskSchema());
-mongoose.model('Users', TodoListModels.initUserSchema());
+ModelBinder.initSchema();
 
 // Setup mongoose
 (mongoose as any).Promise = global.Promise;
@@ -72,7 +70,7 @@ const authMiddleware = new AuthMiddleware(
 authMiddleware.initialize(app);
 
 // Register the routes
-TodoListRoutes.configureRoutes(app, container, authMiddleware);
+RouteBinder.configureRoutes(app, container, authMiddleware);
 app.get('/auth/strategies', (req, res) => {
     res.json(authMiddleware.getEnabledAuthStrategies());
 });
